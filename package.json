@@ -1,0 +1,28 @@
+{
+  "name": "calculator-screenplay-bdd",
+  "version": "0.1.0",
+  "description": "A pedagogical calculator application tested with Playwright, BDD, and a hand-baked Screenplay Pattern implementation.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "prepare:screenplay": "npm --prefix ../hand-baked-screenplay-pattern install && npm --prefix ../hand-baked-screenplay-pattern run build",
+    "dev": "tsx src/startServer.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "bddgen": "bddgen",
+    "test": "npm run bddgen && playwright test",
+    "test:unit": "playwright test --project=unit-and-api",
+    "test:bdd": "npm run bddgen && playwright test --project=bdd",
+    "verify": "npm run typecheck && npm run build && npm test"
+  },
+  "dependencies": {
+    "hand-baked-screenplay-pattern": "file:../hand-baked-screenplay-pattern"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0",
+    "@types/node": "^22.10.0",
+    "playwright-bdd": "^8.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.7.0"
+  }
+}

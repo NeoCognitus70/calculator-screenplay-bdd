@@ -1,6 +1,9 @@
 # Generated dependencies and build artifacts stay out of Git so the repository
 # remains focused on the pedagogical source files.
 node_modules/
+.npm-cache/
+.playwright-browsers/
+.tmp/
 dist/
 playwright-report/
 test-results/
