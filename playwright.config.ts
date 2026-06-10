@@ -23,6 +23,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: baseUrl,
+    screenshot: 'on',
     trace: 'on-first-retry',
   },
   webServer: {

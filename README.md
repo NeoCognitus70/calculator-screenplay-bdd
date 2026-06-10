@@ -108,6 +108,16 @@ npm run verify
 `features/.features-gen/`. Generated files are ignored because the source of
 truth is the feature text plus the step definitions.
 
+Playwright is configured with `screenshot: 'on'`, so browser-backed tests record
+screenshots even when they pass. That is intentional for this small pedagogical
+project: the screenshots make it easier to inspect what the Screenplay actor saw,
+connect Gherkin scenarios to visible UI behavior, and discuss test evidence with
+people learning the pattern.
+
+For a larger test project, change this setting to `only-on-failure` or remove it.
+Always-on screenshots increase storage use, slow report handling, and can make
+test artifacts noisy once the suite grows substantially.
+
 ## Screenplay Guide
 
 Read [SCREENPLAY.md](./SCREENPLAY.md) for the Screenplay architecture used by
