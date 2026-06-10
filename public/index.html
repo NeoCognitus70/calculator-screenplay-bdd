@@ -1,0 +1,53 @@
+<!--
+  Responsibility: provide the calculator's browser surface.
+
+  Pedagogical decision: the UI is intentionally small and semantic. It keeps
+  visual concerns in CSS and delegates behavior to the compiled TypeScript
+  controller so frontend tests can target user-visible controls.
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator Screenplay BDD</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="application-shell">
+      <section class="calculator-panel" aria-labelledby="calculator-title">
+        <div class="panel-heading">
+          <p class="eyebrow">Screenplay BDD sample</p>
+          <h1 id="calculator-title">Calculator</h1>
+        </div>
+
+        <form id="calculator-form" class="calculator-form" novalidate>
+          <label for="left-operand">Left operand</label>
+          <input id="left-operand" name="leftOperand" type="number" step="any" value="7" required />
+
+          <label for="operator">Operator</label>
+          <select id="operator" name="operator" required>
+            <option value="add">Add</option>
+            <option value="subtract">Subtract</option>
+            <option value="multiply">Multiply</option>
+            <option value="divide">Divide</option>
+          </select>
+
+          <label for="right-operand">Right operand</label>
+          <input id="right-operand" name="rightOperand" type="number" step="any" value="5" required />
+
+          <div class="actions">
+            <button type="submit">Calculate</button>
+            <button type="reset" class="secondary-button">Reset</button>
+          </div>
+        </form>
+
+        <output id="calculation-result" class="calculation-result" aria-live="polite">
+          Enter values and calculate.
+        </output>
+      </section>
+    </main>
+
+    <script type="module" src="/uiController.js"></script>
+  </body>
+</html>

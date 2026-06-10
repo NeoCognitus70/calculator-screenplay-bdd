@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "prepare:screenplay": "npm --prefix ../hand-baked-screenplay-pattern install && npm --prefix ../hand-baked-screenplay-pattern run build",
-    "dev": "tsx src/startServer.ts",
+    "dev": "npm run build && tsx src/startServer.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "bddgen": "bddgen",

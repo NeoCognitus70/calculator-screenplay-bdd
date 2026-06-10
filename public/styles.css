@@ -1,0 +1,137 @@
+/*
+  Responsibility: style the calculator UI with stable, readable layout rules.
+
+  Pedagogical decision: the visual design is intentionally restrained so the
+  example stays focused on the app and its tests instead of decorative layout.
+*/
+
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #edf1f5;
+  color: #17202a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.application-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.calculator-panel {
+  width: min(100%, 440px);
+  border: 1px solid #c7d2df;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgb(23 32 42 / 12%);
+  padding: 24px;
+}
+
+.panel-heading {
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #4d667a;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.calculator-form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  color: #2a3845;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #a9b7c4;
+  border-radius: 6px;
+  padding: 9px 11px;
+  color: #17202a;
+  background: #fbfcfe;
+  font: inherit;
+}
+
+input:focus,
+select:focus,
+button:focus {
+  outline: 3px solid #7cb7d8;
+  outline-offset: 2px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: #ffffff;
+  background: #245b73;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1c495d;
+}
+
+.secondary-button {
+  color: #17202a;
+  background: #d9e2ea;
+}
+
+.secondary-button:hover {
+  background: #c9d5df;
+}
+
+.calculation-result {
+  display: block;
+  min-height: 56px;
+  margin-top: 18px;
+  border-left: 4px solid #2d7a51;
+  border-radius: 4px;
+  padding: 14px 16px;
+  background: #f5faf7;
+  color: #173b2a;
+  font-weight: 800;
+}
+
+.calculation-result[data-state="error"] {
+  border-left-color: #b4473f;
+  background: #fff6f4;
+  color: #65302b;
+}
