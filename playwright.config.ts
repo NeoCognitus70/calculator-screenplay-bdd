@@ -13,8 +13,8 @@ const port = Number.parseInt(process.env.CALCULATOR_PORT ?? '3100', 10);
 const baseUrl = process.env.CALCULATOR_BASE_URL ?? `http://127.0.0.1:${port}`;
 
 const bddTestDir = defineBddConfig({
-  paths: ['features/**/*.feature'],
-  require: ['tests/calculatorSteps.ts'],
+  features: 'features/**/*.feature',
+  steps: 'tests/calculatorSteps.ts',
   outputDir: 'features/.features-gen',
 });
 

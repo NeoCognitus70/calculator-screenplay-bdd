@@ -6,13 +6,13 @@
   "private": true,
   "scripts": {
     "prepare:screenplay": "npm --prefix ../hand-baked-screenplay-pattern install && npm --prefix ../hand-baked-screenplay-pattern run build",
-    "dev": "npm run build && tsx src/startServer.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "bddgen": "bddgen",
-    "test": "npm run bddgen && playwright test",
-    "test:unit": "playwright test --project=unit-and-api",
-    "test:bdd": "npm run bddgen && playwright test --project=bdd",
+    "dev": "npm run build && node --max-old-space-size=4096 dist/startServer.js",
+    "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.build.json",
+    "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+    "bddgen": "node --max-old-space-size=4096 ./node_modules/playwright-bdd/dist/cli/index.js",
+    "test": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --workers=1",
+    "test:unit": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=unit-and-api --workers=1",
+    "test:bdd": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=bdd --workers=1",
     "verify": "npm run typecheck && npm run build && npm test"
   },
   "dependencies": {
