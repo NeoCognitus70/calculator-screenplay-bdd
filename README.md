@@ -122,3 +122,6 @@ test artifacts noisy once the suite grows substantially.
 
 Read [SCREENPLAY.md](./SCREENPLAY.md) for the Screenplay architecture used by
 this project and how the core primitives map to the calculator examples.
+
+For deeper pedagogical notes, start with
+[Screenplay Flow Through The System Under Test](./docs/screenplay-flow-through-the-sut.md).
