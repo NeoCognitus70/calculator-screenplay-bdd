@@ -135,3 +135,8 @@ this project and how the core primitives map to the calculator examples.
 
 For deeper pedagogical notes, start with
 [Screenplay Flow Through The System Under Test](./docs/screenplay-flow-through-the-sut.md).
+
+## Change History
+
+Notable changes are recorded in [CHANGELOG.md](./CHANGELOG.md); outstanding work and risks live
+in [docs/backlog.md](./docs/backlog.md).
