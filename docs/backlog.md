@@ -7,7 +7,7 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 2 — Risk #1 resolved via strategy (c): preflight check + README quick-start + ADR 0001
+**Version:** 3 — recorded Risk #2 (no CI gate), found during worklist derivation; BLOCKED on a credential decision
 **Last Updated:** 2026-06-12
 **Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
 
@@ -25,7 +25,34 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-None outstanding.
+### MEDIUM Priority (Score: 10–19)
+
+#### Risk #2: No CI gate — `npm run verify` never runs on PRs or pushes to `main` — Score: 10
+
+**Priority Score:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points**
+**Impact:** Regressions can merge unchecked; the sibling `hand-baked-screenplay-pattern` project gates every PR with verify, this project gates nothing.
+**Effort:** 1–2 hrs once unblocked
+**Status:** BLOCKED — needs a user credential/visibility decision (see below)
+**Affected Stacks:** CI (`.github/workflows/`), build
+
+**Problem:**
+There is no `.github/workflows/` directory. A CI workflow must run `npm run verify` (Node 20,
+npm cache) and, per [ADR 0001](./adr/0001-consume-screenplay-library-via-sibling-checkout.md),
+check out `NeoCognitus70/hand-baked-screenplay-pattern` side by side with this repository so the
+`file:../` dependency and `prepare:screenplay` resolve exactly as they do locally.
+
+**Blocker (2026-06-12):** `hand-baked-screenplay-pattern` is **private**, and `actions/checkout`
+cannot read a second private repository with the default `GITHUB_TOKEN`. No PAT secret exists on
+this repository (`gh secret list` is empty). To unblock, the user must either:
+- (a) create a fine-grained PAT with read-only Contents access to
+  `hand-baked-screenplay-pattern` and store it as a repo secret (e.g. `SCREENPLAY_REPO_TOKEN`)
+  on this repository, for the workflow to pass to `actions/checkout`; or
+- (b) make `hand-baked-screenplay-pattern` public.
+
+**Success Criteria:**
+- [ ] `.github/workflows/` workflow runs `npm run verify` on PRs and pushes to `main` (Node 20, npm cache)
+- [ ] The workflow checks out the sibling library (its `main`) side by side, so `file:../` resolves as locally
+- [ ] A green run on the PR introducing it, cited by run id
 
 ---
 
@@ -61,9 +88,9 @@ Actual effort: ~1 hr.
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 0 | — | — |
+| MEDIUM (10–19) | 1 | 1–2 hrs | 1 BLOCKED |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **0** | — | |
+| **Total Outstanding** | **1** | **1–2 hrs** | |
 | Resolved | 1 | ~1 hr completed | |
 
 ---
