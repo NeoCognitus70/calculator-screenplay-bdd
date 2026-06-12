@@ -46,13 +46,23 @@ tests/
 ## Prerequisites
 
 - Node.js 18 or newer.
-- The sibling `../hand-baked-screenplay-pattern` project must be present.
+- **Two repositories, cloned side by side.** This project consumes the Screenplay library from a
+  sibling checkout (a deliberate decision for this co-developed teaching pair — see
+  [ADR 0001](./docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)):
 
-The dependency on `hand-baked-screenplay-pattern` is local:
+```bash
+git clone https://github.com/NeoCognitus70/calculator-screenplay-bdd
+git clone https://github.com/NeoCognitus70/hand-baked-screenplay-pattern
+```
+
+The dependency on `hand-baked-screenplay-pattern` is local and unpinned by design:
 
 ```json
 "hand-baked-screenplay-pattern": "file:../hand-baked-screenplay-pattern"
 ```
+
+A preflight check (`scripts/preflight-screenplay.mjs`) runs before `prepare:screenplay` and
+`verify`, and fails fast with the exact clone command if the sibling checkout is missing.
 
 ## Install
 
@@ -125,3 +135,8 @@ this project and how the core primitives map to the calculator examples.
 
 For deeper pedagogical notes, start with
 [Screenplay Flow Through The System Under Test](./docs/screenplay-flow-through-the-sut.md).
+
+## Change History
+
+Notable changes are recorded in [CHANGELOG.md](./CHANGELOG.md); outstanding work and risks live
+in [docs/backlog.md](./docs/backlog.md).
