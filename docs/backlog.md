@@ -7,8 +7,8 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 1 — initial backlog, created when the project was onboarded to the portfolio prompt conventions
-**Last Updated:** 2026-06-11
+**Version:** 2 — Risk #1 resolved via strategy (c): preflight check + README quick-start + ADR 0001
+**Last Updated:** 2026-06-12
 **Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
@@ -25,44 +25,34 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-### MEDIUM Priority (Score: 10–19)
-
-#### Risk #1: Hard dependency on a sibling checkout of `hand-baked-screenplay-pattern` — Score: 10
-
-**Priority Score:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points**
-**Impact:** A fresh clone cannot build or test without `../hand-baked-screenplay-pattern` checked out beside it.
-**Effort:** 2–6 hrs depending on chosen strategy
-**Status:** READY TO START
-**Affected Stacks:** build (`prepare:screenplay` in `package.json`), CI, local onboarding
-
-**Problem:**
-`package.json`'s `prepare:screenplay` script runs `npm --prefix ../hand-baked-screenplay-pattern
-install && ... run build`, binding this repo to an unversioned, sibling-path checkout of the
-Screenplay library. The dependency is invisible to `npm install`, unpinned (whatever the sibling's
-working tree holds), and breaks any environment that clones this repo alone.
-
-**Impact Analysis:**
-- **Security (0/10):** none.
-- **Breakage (6/10):** fresh clones and single-repo CI runners fail at build time; the failure
-  mode (missing sibling path) is confusing for newcomers.
-- **Maintenance (4/10):** changes in the sibling library can break this repo silently; there is
-  no version pin to bisect against.
-
-**Refactor Strategy:**
-Choose and document one of: (a) consume the library as a pinned git dependency or published
-package; (b) vendor a built copy; (c) keep the sibling-path convention but document it prominently
-in the README and add a preflight check with a clear error message. Record the choice as an ADR.
-
-**Success Criteria:**
-- [ ] A documented, reproducible path from `git clone` of this repo alone to a green `npm run verify`
-- [ ] The dependency on the Screenplay library is pinned or explicitly documented with a preflight check
-- [ ] Decision recorded (ADR or README section)
+None outstanding.
 
 ---
 
 ### Resolved Risks
 
-None yet. Resolved risks are kept here as a record that the gap existed — do not delete them.
+Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### Risk #1: Hard dependency on a sibling checkout of `hand-baked-screenplay-pattern` ✅ Resolved 2026-06-12
+
+**Priority Score was:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points** (MEDIUM)
+**Resolution:** Strategy (c), user-confirmed — the `file:../` sibling convention is kept
+deliberately for this co-developed teaching pair. Added
+`scripts/preflight-screenplay.mjs`, run before `prepare:screenplay` (sibling present?) and before
+`verify` (sibling present and built?), failing fast with the exact clone remedy; promoted the
+sibling requirement into the README quick-start ("clone both, side by side"); recorded the
+decision and its revisit trigger (external consumers ⇒ pinned git dependency with a tagged
+release) in
+[`docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md`](./adr/0001-consume-screenplay-library-via-sibling-checkout.md).
+Actual effort: ~1 hr.
+
+**Success Criteria:**
+- [x] A documented, reproducible path from `git clone` to a green `npm run verify` (README
+  Prerequisites/Install: clone both repos side by side, `prepare:screenplay`, `install`, `verify`)
+- [x] The dependency is explicitly documented with a preflight check that fails with a clear
+  error message when the sibling is missing
+- [x] Decision recorded (ADR 0001)
+**See:** PR introducing the change (worklist branch `worklist/sibling-dependency-and-ci`).
 
 ---
 
@@ -71,10 +61,10 @@ None yet. Resolved risks are kept here as a record that the gap existed — do n
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 1 | 2–6 hrs | 1 READY TO START |
+| MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **1** | **2–6 hrs** | |
-| Resolved | 0 | — | |
+| **Total Outstanding** | **0** | — | |
+| Resolved | 1 | ~1 hr completed | |
 
 ---
 
