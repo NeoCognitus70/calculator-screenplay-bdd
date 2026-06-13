@@ -7,9 +7,8 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 5 — Risk #2 (CI gate) resolved via side-by-side checkout (library made public, user
-decision 2026-06-12); Risk #3 (flaky displayed-message question) and Risk #4 (`prepare:screenplay`
-mutating the sibling) recorded and resolved
+**Version:** 6 — pruned the stale "Add `CHANGELOG.md`" next step (delivered in W3, PR #3); all
+Potential Next Steps now closed
 **Last Updated:** 2026-06-13
 **Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
 
@@ -127,10 +126,14 @@ Actual effort: ~1 hr.
 
 ## Potential Next Steps
 
+_All previously listed next steps are now delivered (see below) — none outstanding._
+
 ### MEDIUM Priority
 
-1. **Add `CHANGELOG.md`** — ~1 hr, NOT STARTED. The portfolio layout contract recommends one; the
-   sibling `hand-baked-screenplay-pattern` project has an established example to follow.
+1. ✅ **Add `CHANGELOG.md`** — DONE 2026-06-12 (W3, commit `076309c`, PR #3). Scaffolded from the
+   portfolio `templates/changelog.template.md`; `[0.1.0]` records the initial suite + PRs #1–#2 and
+   `[Unreleased]` tracks ongoing changes; linked from the README's Change History section. (This
+   entry was stale — listed NOT STARTED after delivery; pruned in v6.)
 
 ### LOW Priority
 
