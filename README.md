@@ -136,6 +136,10 @@ this project and how the core primitives map to the calculator examples.
 For deeper pedagogical notes, start with
 [Screenplay Flow Through The System Under Test](./docs/screenplay-flow-through-the-sut.md).
 
+For a map of how the repository and its Playwright + `playwright-bdd` toolchain
+fit together, see
+[Project Structure and Test Architecture](./docs/project-structure-and-test-architecture.md).
+
 ## Change History
 
 Notable changes are recorded in [CHANGELOG.md](./CHANGELOG.md); outstanding work and risks live
