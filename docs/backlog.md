@@ -134,10 +134,11 @@ Actual effort: ~1 hr.
 
 ### LOW Priority
 
-1. **Expand `docs/`** — the only doc beyond the README is
-   `docs/screenplay-flow-through-the-sut.md`; consider a short architecture note covering the
-   playwright-bdd project structure (`features/`, `src/`, `tests/`, the unit-and-api vs bdd
-   Playwright projects).
+1. ✅ **Expand `docs/`** — DONE 2026-06-13 (W4). Added
+   [`docs/project-structure-and-test-architecture.md`](./project-structure-and-test-architecture.md):
+   a short architecture note covering the project layout (`features/`, `src/`, `tests/`), the
+   `unit-and-api` vs `bdd` Playwright projects, and how `bddgen` generates the BDD specs. Linked
+   from the README. Every claim checked against `playwright.config.ts` and `package.json`.
 
 ---
 
