@@ -7,8 +7,9 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 3 — recorded Risk #2 (no CI gate), found during worklist derivation; BLOCKED on a credential decision
-**Last Updated:** 2026-06-12
+**Version:** 4 — Risk #2 (CI gate) resolved via side-by-side checkout (library made public, user
+decision 2026-06-12); Risk #3 (flaky displayed-message question) recorded and resolved
+**Last Updated:** 2026-06-13
 **Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
@@ -25,40 +26,49 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-### MEDIUM Priority (Score: 10–19)
-
-#### Risk #2: No CI gate — `npm run verify` never runs on PRs or pushes to `main` — Score: 10
-
-**Priority Score:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points**
-**Impact:** Regressions can merge unchecked; the sibling `hand-baked-screenplay-pattern` project gates every PR with verify, this project gates nothing.
-**Effort:** 1–2 hrs once unblocked
-**Status:** BLOCKED — needs a user credential/visibility decision (see below)
-**Affected Stacks:** CI (`.github/workflows/`), build
-
-**Problem:**
-There is no `.github/workflows/` directory. A CI workflow must run `npm run verify` (Node 20,
-npm cache) and, per [ADR 0001](./adr/0001-consume-screenplay-library-via-sibling-checkout.md),
-check out `NeoCognitus70/hand-baked-screenplay-pattern` side by side with this repository so the
-`file:../` dependency and `prepare:screenplay` resolve exactly as they do locally.
-
-**Blocker (2026-06-12):** `hand-baked-screenplay-pattern` is **private**, and `actions/checkout`
-cannot read a second private repository with the default `GITHUB_TOKEN`. No PAT secret exists on
-this repository (`gh secret list` is empty). To unblock, the user must either:
-- (a) create a fine-grained PAT with read-only Contents access to
-  `hand-baked-screenplay-pattern` and store it as a repo secret (e.g. `SCREENPLAY_REPO_TOKEN`)
-  on this repository, for the workflow to pass to `actions/checkout`; or
-- (b) make `hand-baked-screenplay-pattern` public.
-
-**Success Criteria:**
-- [ ] `.github/workflows/` workflow runs `npm run verify` on PRs and pushes to `main` (Node 20, npm cache)
-- [ ] The workflow checks out the sibling library (its `main`) side by side, so `file:../` resolves as locally
-- [ ] A green run on the PR introducing it, cited by run id
+_No outstanding risks._
 
 ---
 
 ### Resolved Risks
 
 Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### Risk #2: No CI gate — `npm run verify` never runs on PRs or pushes to `main` ✅ Resolved 2026-06-13
+
+**Priority Score was:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points** (MEDIUM)
+**Resolution:** Added `.github/workflows/ci.yml` running `npm run verify` on pull requests and
+pushes to `main` (Node 20, npm cache). Per
+[ADR 0001](./adr/0001-consume-screenplay-library-via-sibling-checkout.md) the workflow checks out
+`NeoCognitus70/hand-baked-screenplay-pattern` (its `main`) side by side, so `file:../` and
+`prepare:screenplay` resolve exactly as they do locally. `npm_config_cache` redirects the
+repo-local `.npmrc` cache path to the runner default so setup-node's cache is effective.
+
+**Unblocked by user decision (2026-06-12):** the library repo was made **public** (option (b)),
+so the default `GITHUB_TOKEN` suffices for the second checkout — no PAT secret needed. (The item
+was BLOCKED 2026-06-12 while the library was private and no PAT secret existed.)
+
+**Success Criteria:**
+- [x] `.github/workflows/` workflow runs `npm run verify` on PRs and pushes to `main` (Node 20, npm cache)
+- [x] The workflow checks out the sibling library (its `main`) side by side, so `file:../` resolves as locally
+- [x] A green run on the PR introducing it — **run `27450198314`** on PR #4 (`worklist/ci-and-prepare-fix`)
+**See:** PR #4.
+
+#### Risk #3: Flaky displayed-message question raced the UI controller's async render ✅ Resolved 2026-06-13
+
+**Priority Score was:** Security Impact (0) + Breakage Probability (5) + Maintenance Burden (2) = **7 points** (LOW)
+**Discovered:** 2026-06-13, when Risk #2's first CI run (`27450065305`) failed the divide-by-zero
+UI scenario on a fast runner. `TheDisplayedCalculation.message()` read `#calculation-result` with
+a one-shot `textContent()` that raced the controller's `fetch → JSON → DOM` update and read the
+idle prompt.
+**Resolution:** the question now waits for the controller's settled `data-state`
+(`success`/`error`) on the element before reading — an explicit wait on a settled-state attribute
+rather than racing text content (durable lesson carried from the magento project). Local `test:bdd`
+green; CI run `27450198314` green.
+
+**Success Criteria:**
+- [x] The displayed-message question waits for a settled render before reading
+- [x] Green locally and in CI
 
 #### Risk #1: Hard dependency on a sibling checkout of `hand-baked-screenplay-pattern` ✅ Resolved 2026-06-12
 
@@ -88,10 +98,10 @@ Actual effort: ~1 hr.
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 1 | 1–2 hrs | 1 BLOCKED |
+| MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **1** | **1–2 hrs** | |
-| Resolved | 1 | ~1 hr completed | |
+| **Total Outstanding** | **0** | **—** | |
+| Resolved | 3 | ~2.5 hrs completed | |
 
 ---
 
