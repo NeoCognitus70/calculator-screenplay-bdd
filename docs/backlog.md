@@ -7,8 +7,9 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 4 — Risk #2 (CI gate) resolved via side-by-side checkout (library made public, user
-decision 2026-06-12); Risk #3 (flaky displayed-message question) recorded and resolved
+**Version:** 5 — Risk #2 (CI gate) resolved via side-by-side checkout (library made public, user
+decision 2026-06-12); Risk #3 (flaky displayed-message question) and Risk #4 (`prepare:screenplay`
+mutating the sibling) recorded and resolved
 **Last Updated:** 2026-06-13
 **Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
 
@@ -70,6 +71,25 @@ green; CI run `27450198314` green.
 - [x] The displayed-message question waits for a settled render before reading
 - [x] Green locally and in CI
 
+#### Risk #4: `prepare:screenplay` mutated the sibling repository on every run ✅ Resolved 2026-06-13
+
+**Priority Score was:** Security Impact (0) + Breakage Probability (5) + Maintenance Burden (3) = **8 points** (LOW)
+**Discovered:** 2026-06-12 while running the worklist loop. `npm --prefix ../hand-baked-screenplay-pattern install`
+resolved this project's `file:../` reference from the *consumer's* directory (an npm 10.8.2 quirk)
+and injected a circular `"calculator-screenplay-bdd": "file:../calculator-screenplay-bdd"`
+dependency into the sibling's `package.json`/`package-lock.json` every run — dirtying the provider
+repo's tree (and tripping the hand-baked loop's dirty-tree stop condition).
+**Resolution:** `prepare:screenplay` now `cd`s into the sibling (`cd ../hand-baked-screenplay-pattern
+&& npm install && npm run build`) instead of using `--prefix`, so installs resolve from the
+sibling's own directory and its tree stays clean.
+
+**Success Criteria:**
+- [x] `prepare:screenplay` no longer modifies any tracked file in `../hand-baked-screenplay-pattern`
+  (verified: `git -C ../hand-baked-screenplay-pattern status --porcelain` empty after a prepare run
+  from a clean sibling tree)
+- [x] `npm run verify` still green afterwards (11/11)
+- [x] Recorded in `CHANGELOG.md` [Unreleased] Fixed
+
 #### Risk #1: Hard dependency on a sibling checkout of `hand-baked-screenplay-pattern` ✅ Resolved 2026-06-12
 
 **Priority Score was:** Security Impact (0) + Breakage Probability (6) + Maintenance Burden (4) = **10 points** (MEDIUM)
@@ -101,7 +121,7 @@ Actual effort: ~1 hr.
 | MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
 | **Total Outstanding** | **0** | **—** | |
-| Resolved | 3 | ~2.5 hrs completed | |
+| Resolved | 4 | ~3 hrs completed | |
 
 ---
 
