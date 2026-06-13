@@ -28,6 +28,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   recording the decision to keep the `file:../` sibling-checkout convention (with its
   revisit trigger), resolving backlog Risk #1.
 - Added this `CHANGELOG.md`, scaffolded from the portfolio changelog template.
+- Added a CI workflow (`.github/workflows/ci.yml`) running `npm run verify` on pull requests
+  and pushes to `main` (Node 20, npm cache). Per [ADR 0001](./docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)
+  it checks out the now-public sibling `hand-baked-screenplay-pattern` (its `main`) side by
+  side, so the `file:../` dependency and `prepare:screenplay` resolve as they do locally.
+  Resolves backlog Risk #2.
+
+### Fixed
+
+- Fixed `prepare:screenplay` mutating the sibling repository. `npm --prefix ../hand-baked-screenplay-pattern install`
+  resolved this project's `file:../` reference from the *consumer's* directory and injected a
+  circular `"calculator-screenplay-bdd": "file:../calculator-screenplay-bdd"` dependency into the
+  sibling's `package.json`/`package-lock.json` on every run. The script now `cd`s into the sibling
+  before `npm install && npm run build`, leaving the sibling's tree clean.
+- Fixed a flaky displayed-message question: `TheDisplayedCalculation.message()` read
+  `#calculation-result` with a one-shot `textContent()` that raced the UI controller's async
+  render and read the idle prompt on fast CI runners. It now waits for the controller's settled
+  `data-state` (`success`/`error`) before reading.
 
 ### Changed
 

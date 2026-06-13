@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "preflight:screenplay": "node scripts/preflight-screenplay.mjs",
-    "prepare:screenplay": "node scripts/preflight-screenplay.mjs && npm --prefix ../hand-baked-screenplay-pattern install && npm --prefix ../hand-baked-screenplay-pattern run build",
+    "prepare:screenplay": "node scripts/preflight-screenplay.mjs && cd ../hand-baked-screenplay-pattern && npm install && npm run build",
     "dev": "npm run build && node --max-old-space-size=4096 dist/startServer.js",
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",

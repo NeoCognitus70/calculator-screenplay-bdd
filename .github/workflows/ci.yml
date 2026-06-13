@@ -1,0 +1,69 @@
+# CI gate: every PR and push to main must pass `npm run verify`
+# (preflight + typecheck + build + Playwright tests).
+#
+# Per ADR 0001 (docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)
+# this project consumes the Screenplay library from a SIBLING checkout via a
+# `file:../` dependency, so the workflow reproduces the documented local layout:
+# both repositories checked out side by side inside the workspace.
+# `hand-baked-screenplay-pattern` is public, so the default GITHUB_TOKEN
+# suffices for the second checkout (user decision, 2026-06-12).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The repo's .npmrc points npm's cache at a repo-local dir (a local-machine
+  # convenience). Environment config outranks .npmrc, so this redirects the
+  # cache back to the runner default — the same directory actions/setup-node
+  # saves and restores.
+  npm_config_cache: /home/runner/.npm
+
+jobs:
+  verify:
+    name: verify (Node 20)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: calculator-screenplay-bdd
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+        with:
+          path: calculator-screenplay-bdd
+
+      - name: Check out the sibling Screenplay library (ADR 0001)
+        uses: actions/checkout@v4
+        with:
+          repository: NeoCognitus70/hand-baked-screenplay-pattern
+          ref: main
+          path: hand-baked-screenplay-pattern
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: calculator-screenplay-bdd/package-lock.json
+
+      - name: Build the sibling Screenplay library
+        run: npm run prepare:screenplay
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify (preflight + typecheck + build + test)
+        run: npm run verify
