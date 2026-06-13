@@ -35,10 +35,18 @@ export class TheApiCalculation {
 export class TheDisplayedCalculation {
   static message(): Answerable<string> {
     return Question.about('the displayed calculation message', async (actor) => {
-      const text = await actor
+      // The controller renders asynchronously after the fetch settles, marking
+      // the outcome via data-state. Wait explicitly for a settled render before
+      // reading — a one-shot textContent() races the response and flakes on
+      // fast CI runners (the element still shows the idle prompt).
+      const settled = actor
         .abilityTo(BrowseTheWeb)
-        .page.locator('#calculation-result')
-        .textContent();
+        .page.locator(
+          '#calculation-result[data-state="success"], #calculation-result[data-state="error"]',
+        );
+
+      await settled.waitFor({ state: 'attached' });
+      const text = await settled.textContent();
 
       return text?.trim() ?? '';
     });
