@@ -60,6 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   422), distinct from a malformed request (HTTP 400) covered at the API-integration layer. This
   surfaces the 400-vs-422 distinction at the business-readable BDD layer, which previously only
   lived in the Screenplay task `Calculate.shouldHaveBeenRejectedAsUnsupported()`.
+- Moved the `screenshot: 'on'` trade-off next to the setting in `playwright.config.ts`: an
+  inline comment now points at the README "Screenshots" guidance to switch to
+  `only-on-failure` for larger suites. The config is the most-copied file, so the caveat
+  travels with it.
 
 ---
 
