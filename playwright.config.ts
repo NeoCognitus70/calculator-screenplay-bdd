@@ -19,7 +19,10 @@ const bddTestDir = defineBddConfig({
 });
 
 export default defineConfig({
-  fullyParallel: true,
+  // Single shared webServer with no per-test data isolation: tests run serially
+  // (every script also pins --workers=1). Flip to true only once each test owns
+  // isolated state or a server-per-worker. See docs/project-structure-and-test-architecture.md.
+  fullyParallel: false,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: baseUrl,

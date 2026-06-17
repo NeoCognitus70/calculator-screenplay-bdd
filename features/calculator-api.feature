@@ -4,6 +4,15 @@
 # Pedagogical decision: these scenarios sit above API integration tests. They
 # prove externally meaningful outcomes while the Screenplay layer keeps the
 # automation vocabulary domain-oriented.
+#
+# Rejection-contract convention: "reject the calculation with ..." denotes a
+# *well-formed but unsupported* request -> HTTP 422 Unprocessable Content (e.g.
+# division by zero), asserted by Calculate.shouldHaveBeenRejectedAsUnsupported()
+# in tests/calculatorTasks.ts. This is deliberately distinct from a *malformed*
+# request -> HTTP 400 Bad Request (e.g. an unknown operator or a non-JSON body),
+# which the server returns on a separate path (src/calculatorHttpServer.ts). The
+# 400 path is covered at the API-integration layer (tests/api.spec.ts), keeping
+# the two rejection kinds distinguishable without overloading one Gherkin step.
 Feature: Calculator REST API
 
   Rule: Supported calculations produce a numeric result

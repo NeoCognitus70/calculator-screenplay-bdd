@@ -50,6 +50,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed the README prerequisites from "the sibling project must be present" to an explicit
   clone-both-repositories-side-by-side quick-start linking ADR 0001.
+- Set `fullyParallel: false` in `playwright.config.ts` to match reality: there is a single
+  shared `webServer` with no per-test data isolation, and every test script already pins
+  `--workers=1`. The config previously advertised `fullyParallel: true`, an isolation guarantee
+  the scripts silently overrode. A comment records what must change (per-test state isolation or
+  a server-per-worker) before parallelism is safe.
+- Documented the REST rejection-contract convention in the `features/calculator-api.feature`
+  header: "reject the calculation with ..." denotes a well-formed but unsupported request (HTTP
+  422), distinct from a malformed request (HTTP 400) covered at the API-integration layer. This
+  surfaces the 400-vs-422 distinction at the business-readable BDD layer, which previously only
+  lived in the Screenplay task `Calculate.shouldHaveBeenRejectedAsUnsupported()`.
 
 ---
 
