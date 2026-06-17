@@ -59,3 +59,13 @@ this project does not yet need, at the cost of a release/tag ceremony on every l
 If `hand-baked-screenplay-pattern` ever gains consumers outside this portfolio, promote the
 dependency to a **pinned git dependency with a tagged release** (strategy (a)) and retire the
 preflight's clone remedy in favour of the pinned reference.
+
+## Review log
+
+- **2026-06-17 (review Risk 4 / CAL-04):** the same trade-off surfaces in CI, where
+  `.github/workflows/ci.yml` checks out the sibling at a floating `ref: main`, so an unrelated
+  sibling commit can turn a green PR red and a past PR's CI is not reproducible. Reviewed and
+  **deferral reaffirmed** — no CI pin added. The floating `ref: main` is the intended design for
+  this co-developed teaching pair: the calculator *should* break loudly when a sibling change
+  breaks it, and there are still no external consumers to protect (KISS/YAGNI). The pin-to-tag
+  remedy remains gated on this ADR's external-consumers revisit trigger above.

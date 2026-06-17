@@ -64,6 +64,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inline comment now points at the README "Screenshots" guidance to switch to
   `only-on-failure` for larger suites. The config is the most-copied file, so the caveat
   travels with it.
+- Recorded a dated review-log entry in [ADR 0001](./docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md):
+  the CI sibling checkout's floating `ref: main` was reviewed 2026-06-17 (review Risk 4 / CAL-04)
+  and deferral reaffirmed — no CI pin added; the pin-to-tag remedy stays gated on the ADR's
+  external-consumers trigger.
 
 ---
 
