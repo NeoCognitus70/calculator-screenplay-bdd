@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed the README prerequisites from "the sibling project must be present" to an explicit
   clone-both-repositories-side-by-side quick-start linking ADR 0001.
+- Set `fullyParallel: false` in `playwright.config.ts` to match reality: there is a single
+  shared `webServer` with no per-test data isolation, and every test script already pins
+  `--workers=1`. The config previously advertised `fullyParallel: true`, an isolation guarantee
+  the scripts silently overrode. A comment records what must change (per-test state isolation or
+  a server-per-worker) before parallelism is safe.
 
 ---
 
