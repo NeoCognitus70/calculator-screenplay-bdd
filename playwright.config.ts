@@ -26,6 +26,8 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: baseUrl,
+    // Always-on screenshots aid teaching here; switch to 'only-on-failure' for a
+    // larger suite (storage/report cost). See the "Screenshots" section in README.md.
     screenshot: 'on',
     trace: 'on-first-retry',
   },
