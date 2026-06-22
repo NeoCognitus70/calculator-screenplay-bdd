@@ -7,10 +7,14 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 6 — pruned the stale "Add `CHANGELOG.md`" next step (delivered in W3, PR #3); all
-Potential Next Steps now closed
-**Last Updated:** 2026-06-13
-**Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts, PR #1)
+**Version:** 7 — reconciled with the 2026-06-16 code review (`CLAUDE_Opus_4_8` v1) and the
+CAL-01..05 refinement cycle: recorded the review and folded all five findings in as resolved
+(see "Code Review (2026-06-16) — refinements actioned"). The CHANGELOG already carried these;
+this catches the backlog up.
+**Last Updated:** 2026-06-22
+**Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts,
+PR #1), plus the `.review/CODE_REVIEW_CLAUDE_Opus_4_8_v1_20260616T1542Z/` code review and the
+CAL-01..05 worklist (PRs #8–#10), with `main` at `2a9fe0b` (PR #10 merged).
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
 ordered by priority score (highest first). It is the project's **source of truth** for item
@@ -112,6 +116,31 @@ Actual effort: ~1 hr.
 
 ---
 
+## Code Review (2026-06-16) — refinements actioned (CAL-01..05) ✅ All resolved
+
+A full static code review was run on 2026-06-16
+(`.review/CODE_REVIEW_CLAUDE_Opus_4_8_v1_20260616T1542Z/`, reviewer `CLAUDE_Opus_4_8`). It
+**confirmed the backlog's four resolved risks still hold** and recorded **no blockers** — every
+finding is a Low/Info robustness, coverage, or reproducibility refinement on an already-complete
+project. A worklist (`WORKLIST_calculator-screenplay-bdd`, derived 2026-06-16) turned the five
+findings into CAL-01..05; all five were delivered and merged across **PRs #8, #9, #10** (2026-06-17),
+and the CHANGELOG `[Unreleased]` section records each change. This entry catches the backlog up.
+
+| Item | Review finding | Severity | Resolution | Commit / PR |
+|---|---|---|---|---|
+| **CAL-01** | Risk 1 — `fullyParallel: true` contradicted by `--workers=1` everywhere (latent isolation mixed-message) | Low | Set `fullyParallel: false` (option (a), the honest KISS choice) with a comment naming the single shared `webServer`, the lack of per-test isolation, and the `--workers=1` guard. | `418eef2` / PR #8 |
+| **CAL-02** | Risk 2 — the 400-vs-422 rejection contract was invisible at the BDD layer (hard-coded only in the Screenplay task) | Low | Documented the "reject … with …" → 422 (unsupported) convention vs the 400 (bad-request) path in the `features/calculator-api.feature` header comment (lighter option; a new 400 scenario was left to CAL-05's scope). | `daafb01` / PR #8 |
+| **CAL-03** | Risk 3 — always-on `screenshot: 'on'` caveat lived only in README prose | Low | Added an inline comment beside `screenshot: 'on'` in `playwright.config.ts` pointing at the README "Screenshots" guidance (switch to `only-on-failure` for larger suites). No behaviour change. | `5eb82db` / PR #9 |
+| **CAL-04** | Risk 4 — CI pins the sibling at floating `ref: main`, so an unrelated sibling commit can turn a green PR red (reproducibility) | Low | **DEFER** (user-confirmed 2026-06-17): no CI pin — the floating ref is the intended design for this co-developed teaching pair. Recorded a dated review-log note in ADR 0001; pin-to-tag stays gated on the ADR's external-consumers trigger. | `c881374` / PR #9 |
+| **CAL-05** | Risk 5 [Info] — edge-coverage gaps in the API and domain layers | Info | Added bottom-of-pyramid tests: `tests/api.spec.ts` malformed-JSON 400 (raw `Buffer` body) + unknown-route 404; `tests/domain.spec.ts` three ISTQB boundary-value cases (negative operands across zero, a 1e6×1e6 product, the finite non-terminating 1/3 division). BDD layer untouched. Suite went **11 → 16** Playwright tests, `npm run verify` green. The optional `/uiController.js` asset branch was left uncovered as non-trivial. | `3bbe03d` / PR #10 |
+
+**Net effect:** the test suite grew from 11 to **16** Playwright tests (6 `api.spec.ts` + 6
+`domain.spec.ts` + 4 BDD scenarios). No new outstanding risk arose from the review; the only
+review recommendation **not** actioned by this cycle is the optional OpenAPI contract-drift guard
+(see Potential Next Steps below).
+
+---
+
 ## Risk Summary
 
 | Priority | Count | Total Effort | Status Distribution |
@@ -120,13 +149,26 @@ Actual effort: ~1 hr.
 | MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
 | **Total Outstanding** | **0** | **—** | |
-| Resolved | 4 | ~3 hrs completed | |
+| Resolved | 4 risks + 5 review refinements (CAL-01..05) | ~3 hrs + ~1 review cycle | |
 
 ---
 
 ## Potential Next Steps
 
-_All previously listed next steps are now delivered (see below) — none outstanding._
+One optional refinement remains open (CAL-06, below); all earlier next steps are delivered.
+
+### LOW Priority — open
+
+1. ⬜ **OpenAPI contract-drift guard (CAL-06)** — Add a fast test (under the `unit-and-api`
+   Playwright project) asserting the operator `enum` served at `/openapi.json`
+   (`src/openApiDocument.ts`) is exactly equal (order-insensitive) to `calculatorOperators`
+   (`src/calculatorContracts.ts`), so adding/removing an operator without updating the
+   hand-written OpenAPI document fails the test. **Source:** review `05_RECOMMENDATIONS.md`
+   "Next Steps"; carried as item **CAL-06** in `WORKLIST_calculator-screenplay-bdd.md` (derived
+   2026-06-20). **Status: NOT STARTED.** This is the one review recommendation the CAL-01..05
+   cycle deliberately left out (not tied to a numbered risk); optional and Low priority.
+
+### Delivered
 
 ### MEDIUM Priority
 
