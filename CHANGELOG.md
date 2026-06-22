@@ -33,6 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it checks out the now-public sibling `hand-baked-screenplay-pattern` (its `main`) side by
   side, so the `file:../` dependency and `prepare:screenplay` resolve as they do locally.
   Resolves backlog Risk #2.
+- Added bottom-of-pyramid edge-coverage tests (review Risk 5 / CAL-05): `tests/api.spec.ts`
+  now covers the malformed-JSON 400 path and an unknown-route 404; `tests/domain.spec.ts` adds
+  ISTQB boundary-value cases (negative operands across zero, a large product, a finite but
+  non-terminating division) backing the README's boundary-value claim. The BDD layer is
+  unchanged.
 
 ### Fixed
 

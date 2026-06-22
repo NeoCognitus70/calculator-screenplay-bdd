@@ -70,4 +70,31 @@ test.describe('Calculator REST API', () => {
       details: ['Division by zero is undefined.'],
     });
   });
+
+  test('returns 400 when the request body is not valid JSON', async ({ request }) => {
+    // Send a raw, unparseable body so the server reaches JSON.parse and throws
+    // a SyntaxError. A Buffer is sent verbatim; a plain string would be
+    // re-serialised by Playwright into a valid JSON string literal and so would
+    // parse successfully (hitting the validation path, not the JSON-syntax one).
+    const response = await request.post('/api/calculations', {
+      headers: { 'content-type': 'application/json' },
+      data: Buffer.from('{ not json'),
+    });
+
+    expect(response.status()).toBe(400);
+    expect(await response.json()).toMatchObject({
+      error: 'Bad Request',
+      details: ['Request body must be valid JSON.'],
+    });
+  });
+
+  test('returns 404 for an unknown route', async ({ request }) => {
+    const response = await request.get('/api/does-not-exist');
+
+    expect(response.status()).toBe(404);
+    expect(await response.json()).toMatchObject({
+      error: 'Not Found',
+      details: ['No route matches GET /api/does-not-exist.'],
+    });
+  });
 });
