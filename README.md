@@ -140,6 +140,18 @@ For a map of how the repository and its Playwright + `playwright-bdd` toolchain
 fit together, see
 [Project Structure and Test Architecture](./docs/project-structure-and-test-architecture.md).
 
+## Licence
+
+[Apache License 2.0](./LICENSE) — © 2026 Gary Brooks.
+
+This licence covers the original calculator application, tests, and documentation in this
+repository. The sibling
+[`hand-baked-screenplay-pattern`](https://github.com/NeoCognitus70/hand-baked-screenplay-pattern)
+provider is an independently licensed Apache-2.0 project; its own
+[`LICENSE`](https://github.com/NeoCognitus70/hand-baked-screenplay-pattern/blob/main/LICENSE)
+remains authoritative. The local `file:../hand-baked-screenplay-pattern` dependency does not vendor
+or relicense that repository. Other dependencies retain their respective terms.
+
 ## Change History
 
 Notable changes are recorded in [CHANGELOG.md](./CHANGELOG.md); outstanding work and risks live
