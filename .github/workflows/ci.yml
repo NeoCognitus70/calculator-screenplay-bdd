@@ -38,19 +38,21 @@ jobs:
         working-directory: calculator-screenplay-bdd
     steps:
       - name: Check out this repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: calculator-screenplay-bdd
+          persist-credentials: false
 
       - name: Check out the sibling Screenplay library (ADR 0001)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: NeoCognitus70/hand-baked-screenplay-pattern
           ref: main
           path: hand-baked-screenplay-pattern
+          persist-credentials: false
 
       - name: Set up Node 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -67,3 +69,14 @@ jobs:
 
       - name: Verify (preflight + typecheck + build + test)
         run: npm run verify
+
+      - name: Upload Playwright evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-failure-${{ github.run_id }}
+          path: |
+            calculator-screenplay-bdd/playwright-report/
+            calculator-screenplay-bdd/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

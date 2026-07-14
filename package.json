@@ -5,9 +5,12 @@
   "license": "Apache-2.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "preflight:screenplay": "node scripts/preflight-screenplay.mjs",
-    "prepare:screenplay": "node scripts/preflight-screenplay.mjs && cd ../hand-baked-screenplay-pattern && npm install && npm run build",
+    "prepare:screenplay": "node scripts/preflight-screenplay.mjs && cd ../hand-baked-screenplay-pattern && npm ci && npm run build",
     "dev": "npm run build && node --max-old-space-size=4096 dist/startServer.js",
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
@@ -23,8 +26,7 @@
   "devDependencies": {
     "@playwright/test": "^1.53.0",
     "@types/node": "^22.10.0",
-    "playwright-bdd": "^8.0.0",
-    "tsx": "^4.20.0",
+    "playwright-bdd": "^9.2.0",
     "typescript": "^5.7.0"
   }
 }

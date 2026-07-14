@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a [publication-readiness audit](./docs/audits/2026-07-14_public-readiness.md) covering
+  source and GitHub history, licences, generated and large artefacts, documentation/CI safety,
+  dependency state, and clean bootstrap evidence. The repository remains private pending explicit
+  owner approval.
+- Added failure-only retention of Playwright reports, traces, and screenshots in CI.
 - Added the canonical Apache License 2.0 terms, aligned package metadata, and a README boundary
   distinguishing this project from its separately licensed sibling Screenplay provider
   (portfolio P-04 / D-05).
@@ -56,6 +61,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated the CI actions to their current v7 majors and disabled persisted checkout credentials.
+- Raised the documented and machine-readable Node.js floor to 20, matching the sibling project and
+  CI, and made `npm ci` the reproducible Calculator install command.
+- Made `prepare:screenplay` use `npm ci` so preparing a clean sibling checkout does not rewrite its
+  tracked lockfile.
+- Upgraded `playwright-bdd` from v8 to v9 and removed unused `tsx`, clearing six dev-only dependency
+  advisories without changing the application dependency surface.
 - Changed the README prerequisites from "the sibling project must be present" to an explicit
   clone-both-repositories-side-by-side quick-start linking ADR 0001.
 - Set `fullyParallel: false` in `playwright.config.ts` to match reality: there is a single
