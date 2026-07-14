@@ -45,7 +45,7 @@ tests/
 
 ## Prerequisites
 
-- Node.js 18 or newer.
+- Node.js 20 or newer (the same supported floor as the sibling library and CI).
 - **Two repositories, cloned side by side.** This project consumes the Screenplay library from a
   sibling checkout (a deliberate decision for this co-developed teaching pair — see
   [ADR 0001](./docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)):
@@ -70,11 +70,18 @@ Build the sibling Screenplay package first, then install this project:
 
 ```bash
 npm run prepare:screenplay
-npm install
+npm ci
 ```
 
 This repository keeps npm's cache local through `.npmrc` so installs do not rely
 on a global cache location.
+
+## Public-readiness status
+
+This repository remains private. The
+[2026-07-14 public-readiness audit](./docs/audits/2026-07-14_public-readiness.md) records the
+technical evidence and owner decisions required before any visibility change. Publication is a
+separate, explicit action; merging audit/remediation changes does not authorise it.
 
 ## Run The Application
 

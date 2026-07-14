@@ -7,14 +7,12 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 7 — reconciled with the 2026-06-16 code review (`CLAUDE_Opus_4_8` v1) and the
-CAL-01..05 refinement cycle: recorded the review and folded all five findings in as resolved
-(see "Code Review (2026-06-16) — refinements actioned"). The CHANGELOG already carried these;
-this catches the backlog up.
-**Last Updated:** 2026-06-22
-**Based on:** survey of the repo at commit `16deca9` (README, SCREENPLAY.md, package scripts,
-PR #1), plus the `.review/CODE_REVIEW_CLAUDE_Opus_4_8_v1_20260616T1542Z/` code review and the
-CAL-01..05 worklist (PRs #8–#10), with `main` at `2a9fe0b` (PR #10 merged).
+**Version:** 8 — reconciled the 2026-07-06 review's publication-facing findings with the P-04
+licence work and the P-07 public-readiness audit. Required dependency, Node-floor, and CI-hygiene
+remediation is resolved; optional engineering ideas remain non-required.
+**Last Updated:** 2026-07-14
+**Based on:** `main` at `e71a7a5`, both code reviews under `.review/`, P-04 licensing evidence, and
+[`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
 ordered by priority score (highest first). It is the project's **source of truth** for item
@@ -37,6 +35,23 @@ _No outstanding risks._
 ### Resolved Risks
 
 Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### 2026-07-14 public-readiness reconciliation ✅ Resolved
+
+The 2026-07-06 `CLAUDE_Fable_5` review identified publication-facing dependency, licensing,
+backlog, Node-floor, and CI-diagnostic gaps. P-04 and this P-07 audit tranche now reconcile them:
+
+- review Risks 1/3: `playwright-bdd` v9 plus removal of unused `tsx` reduce full `npm audit` from
+  six dev-only findings to zero; production remained zero;
+- review Risk 2: P-04 added the recognised Apache-2.0 licence and explicit sibling boundary;
+- review Risk 4: PR #11 merged backlog v7 before this reconciliation;
+- review Risk 5: Node.js ≥20 is now documented and enforced through package metadata;
+- review Risk 9: CI now retains failure-only Playwright evidence, uses current v7 action majors,
+  and disables persisted checkout credentials.
+
+Review Risks 6–8 and CAL-06 remain optional teaching/robustness refinements, not outstanding
+required risks. The repository-visibility and historical-email decisions live in the linked P-07
+audit because they require owner authority rather than code implementation.
 
 #### Risk #2: No CI gate — `npm run verify` never runs on PRs or pushes to `main` ✅ Resolved 2026-06-13
 
@@ -149,7 +164,7 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
 | **Total Outstanding** | **0** | **—** | |
-| Resolved | 4 risks + 5 review refinements (CAL-01..05) | ~3 hrs + ~1 review cycle | |
+| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation | ~3 hrs + 2 review cycles | |
 
 ---
 

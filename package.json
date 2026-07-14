@@ -5,6 +5,9 @@
   "license": "Apache-2.0",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "preflight:screenplay": "node scripts/preflight-screenplay.mjs",
     "prepare:screenplay": "node scripts/preflight-screenplay.mjs && cd ../hand-baked-screenplay-pattern && npm install && npm run build",
@@ -23,8 +26,7 @@
   "devDependencies": {
     "@playwright/test": "^1.53.0",
     "@types/node": "^22.10.0",
-    "playwright-bdd": "^8.0.0",
-    "tsx": "^4.20.0",
+    "playwright-bdd": "^9.2.0",
     "typescript": "^5.7.0"
   }
 }
