@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the canonical Apache License 2.0 terms, aligned package metadata, and a README boundary
+  distinguishing this project from its separately licensed sibling Screenplay provider
+  (portfolio P-04 / D-05).
 - Added `scripts/preflight-screenplay.mjs`, run before `prepare:screenplay` and `verify`
   (`--built`), which fails fast with the exact clone remedy when the sibling
   `hand-baked-screenplay-pattern` checkout is missing or unbuilt.
