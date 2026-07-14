@@ -48,8 +48,9 @@ decision.
 - upgraded `playwright-bdd` from v8 to v9 and removed unused `tsx`, clearing all six audit
   advisories;
 - refreshed compatible lockfile versions while retaining deliberate major-version boundaries;
-- aligned README/package metadata to the tested Node.js 20 floor and replaced `npm install` with
-  reproducible `npm ci` for the Calculator checkout;
+- aligned README/package metadata to the tested Node.js 20 floor and used reproducible `npm ci` for
+  both the Calculator checkout and sibling preparation; the disposable-clone check caught and
+  removed a prior helper-side lockfile rewrite;
 - updated checkout/setup/upload actions to current v7 majors, retained `contents: read`, disabled
   persisted Git credentials, and added failure-only Playwright artefacts;
 - made the repository-local npm-cache comment platform-neutral and linked this audit from the

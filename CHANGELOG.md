@@ -64,6 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated the CI actions to their current v7 majors and disabled persisted checkout credentials.
 - Raised the documented and machine-readable Node.js floor to 20, matching the sibling project and
   CI, and made `npm ci` the reproducible Calculator install command.
+- Made `prepare:screenplay` use `npm ci` so preparing a clean sibling checkout does not rewrite its
+  tracked lockfile.
 - Upgraded `playwright-bdd` from v8 to v9 and removed unused `tsx`, clearing six dev-only dependency
   advisories without changing the application dependency surface.
 - Changed the README prerequisites from "the sibling project must be present" to an explicit
