@@ -42,7 +42,12 @@ Screenplay library's `HttpClient` interface. That lets actors use the built-in
 interactions and questions instead of leaking into feature steps.
 
 Both API and UI actors also receive `ManageData`. The tasks remember the last
-calculation request to demonstrate scenario memory without needing global state.
+calculation request, and the "should be" Then steps recall it through
+`TheRememberedCalculation` (`calculatorQuestions.ts`) — passing it through the
+same pure `calculate()` the server/UI use and asserting the result matches the
+observed outcome. This demonstrates scenario memory as a genuine round trip
+(`Remember` -> `Recall`) rather than a write-only side effect, without needing
+global state.
 
 ## Tasks
 

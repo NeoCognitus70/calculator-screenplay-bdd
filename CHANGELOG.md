@@ -60,6 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `error`; previously a failed fetch left an unhandled rejection and the element stuck at
   `data-state="idle"`. Verified by a new `tests/uiController.spec.ts` that aborts the
   `/api/calculations` route and asserts the settled error state. Suite grew 17 → 18.
+- Fixed the write-only `Remember` loop (CAL-12): added `TheRememberedCalculation`
+  (`tests/calculatorQuestions.ts`), which recalls `lastCalculationRequest` via `Recall.the(...)`
+  and passes it through the same pure `calculate()` the server/UI use. The "the API result
+  should be" and "the displayed result should be" Then steps now assert the recalled/derived
+  value matches the observed outcome, so `Remember` is exercised, not just written.
+  `SCREENPLAY.md`'s scenario-memory claim is now true. No reduction in scenario coverage;
+  suite count unchanged (18).
 - Fixed `prepare:screenplay` mutating the sibling repository. `npm --prefix ../hand-baked-screenplay-pattern install`
   resolved this project's `file:../` reference from the *consumer's* directory and injected a
   circular `"calculator-screenplay-bdd": "file:../calculator-screenplay-bdd"` dependency into the

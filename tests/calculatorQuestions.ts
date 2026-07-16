@@ -8,10 +8,13 @@
 import {
   LastResponse,
   Question,
+  Recall,
   type Answerable,
 } from 'hand-baked-screenplay-pattern';
+import { calculate } from '../src/calculatorDomain.js';
 import type {
   ApiErrorResponse,
+  CalculationRequest,
   CalculationSuccessResponse,
 } from '../src/calculatorContracts.js';
 import { BrowseTheWeb } from './screenplayBrowseTheWeb.js';
@@ -50,5 +53,30 @@ export class TheDisplayedCalculation {
 
       return text?.trim() ?? '';
     });
+  }
+}
+
+export class TheRememberedCalculation {
+  // CAL-12: closes the write-only Remember loop. Calculate.usingTheApi/
+  // usingTheBrowser remember the request they are about to send; these
+  // questions recall it and feed it through the same pure calculate() the
+  // production server/UI use, so a scenario can prove the remembered request
+  // actually explains the observed outcome instead of Remember being a
+  // documented-but-unused side effect.
+  static result(): Answerable<number> {
+    return Question.about('the result derived from the remembered calculation request', async (actor) => {
+      const request = await actor.answer(Recall.the<CalculationRequest>('lastCalculationRequest'));
+      return calculate(request).result;
+    });
+  }
+
+  static expression(): Answerable<string> {
+    return Question.about(
+      'the expression derived from the remembered calculation request',
+      async (actor) => {
+        const request = await actor.answer(Recall.the<CalculationRequest>('lastCalculationRequest'));
+        return calculate(request).expression;
+      },
+    );
   }
 }
