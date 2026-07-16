@@ -46,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ISTQB boundary-value cases (negative operands across zero, a large product, a finite but
   non-terminating division) backing the README's boundary-value claim. The BDD layer is
   unchanged.
+- Added a contract-drift guard test (CAL-06): `tests/api.spec.ts` now asserts the operator
+  `enum` published at `/openapi.json` (`src/openApiDocument.ts`) is set-equal to
+  `calculatorOperators` (`src/calculatorContracts.ts`), so an operator added or removed in one
+  place without the other fails the suite. Suite grew 16 → 17.
 
 ### Fixed
 

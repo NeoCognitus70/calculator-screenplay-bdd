@@ -6,6 +6,7 @@
  * browser for cases the API can prove directly.
  */
 import { expect, test } from '@playwright/test';
+import { calculatorOperators } from '../src/calculatorContracts.js';
 
 test.describe('Calculator REST API', () => {
   test('reports service health and exposes its OpenAPI contract', async ({ request }) => {
@@ -96,5 +97,34 @@ test.describe('Calculator REST API', () => {
       error: 'Not Found',
       details: ['No route matches GET /api/does-not-exist.'],
     });
+  });
+
+  test('keeps the published OpenAPI operator enum in sync with the domain contract', async ({
+    request,
+  }) => {
+    // Contract-drift guard (CAL-06): src/openApiDocument.ts hand-writes the
+    // operator enum, so it can silently fall out of step with
+    // calculatorOperators (src/calculatorContracts.ts) if an operator is
+    // added or removed in one place but not the other. Order-insensitive set
+    // equality catches either kind of drift without demanding a specific
+    // ordering in the hand-written document.
+    const contract = await request.get('/openapi.json');
+    expect(contract.status()).toBe(200);
+
+    const body = (await contract.json()) as {
+      components: {
+        schemas: {
+          CalculationRequest: {
+            properties: {
+              operator: { enum: readonly string[] };
+            };
+          };
+        };
+      };
+    };
+    const publishedOperators = body.components.schemas.CalculationRequest.properties.operator.enum;
+
+    expect(new Set(publishedOperators)).toEqual(new Set(calculatorOperators));
+    expect(publishedOperators).toHaveLength(calculatorOperators.length);
   });
 });
