@@ -7,11 +7,12 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 8 — reconciled the 2026-07-06 review's publication-facing findings with the P-04
-licence work and the P-07 public-readiness audit. Required dependency, Node-floor, and CI-hygiene
-remediation is resolved; optional engineering ideas remain non-required.
-**Last Updated:** 2026-07-14
-**Based on:** `main` at `e71a7a5`, both code reviews under `.review/`, P-04 licensing evidence, and
+**Version:** 9 — closes out the 2026-07-06 `CLAUDE_Fable_5` review cycle: the optional
+teaching/robustness refinements left open by v8 (CAL-06, CAL-11, CAL-12) are now delivered, so
+every finding from that review has a recorded disposition. No outstanding items remain.
+**Last Updated:** 2026-07-17
+**Based on:** `main` at `f52e72c` (branch `worklist/cal-06-contract-drift-guard`, PR #15), both
+code reviews under `.review/`, P-04 licensing evidence, and
 [`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
@@ -35,6 +36,23 @@ _No outstanding risks._
 ### Resolved Risks
 
 Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### 2026-07-17 optional-refinement close-out (CAL-06, CAL-11, CAL-12) ✅ Resolved
+
+The three optional teaching/robustness refinements the 2026-07-14 reconciliation left open
+(review Risks 6 and 8, plus the standalone contract-drift recommendation) are now delivered on
+`worklist/cal-06-contract-drift-guard` (PR #15):
+
+| Item | Review finding | Severity | Resolution | Commit |
+|---|---|---|---|---|
+| **CAL-06** | Standalone recommendation — no OpenAPI/domain contract-drift guard | Low | Added a test asserting the `/openapi.json` operator `enum` (`src/openApiDocument.ts`) is set-equal to `calculatorOperators` (`src/calculatorContracts.ts`). Suite 16 → 17. | `d809428` |
+| **CAL-11** | Risk 6 — the UI controller's `data-state` contract was non-total (an unhandled fetch rejection left it stuck at `idle`) | Low | Wrapped `submitCalculation`'s fetch/response body in `try/catch`, routing failures through the existing `showError(...)`. Added `tests/uiController.spec.ts`, which aborts the `/api/calculations` route and asserts the settled error state. Suite 17 → 18. | `23cbbdb` |
+| **CAL-12** | Risk 8 [Info] — the `Remember.that('lastCalculationRequest', ...)` calls were write-only; SCREENPLAY.md's "demonstrates scenario memory" claim was not exercised | Info | Chose option (a), recall (recorded loop default): added `TheRememberedCalculation` (`tests/calculatorQuestions.ts`), which recalls the request via `Recall.the(...)` and derives the expected result/expression through the same pure `calculate()` the server/UI use; wired into the "API result should be" and "displayed result should be" Then steps. `SCREENPLAY.md` updated. No reduction in scenario coverage. | `f52e72c` |
+
+`npm run verify` was green after every commit; 18/18 Playwright tests on the branch. This closes
+every finding from the 2026-07-06 `CLAUDE_Fable_5` review (Risks 1–9 and the standalone
+recommendation) with a recorded disposition — see the 2026-07-14 entry below for Risks 1–5 and 9,
+and Risk 7 (Info, recorded-not-actioned, no code implication) noted there as well.
 
 #### 2026-07-14 public-readiness reconciliation ✅ Resolved
 
@@ -164,24 +182,14 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
 | **Total Outstanding** | **0** | **—** | |
-| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation | ~3 hrs + 2 review cycles | |
+| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) | ~3 hrs + 3 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-One optional refinement remains open (CAL-06, below); all earlier next steps are delivered.
-
-### LOW Priority — open
-
-1. ⬜ **OpenAPI contract-drift guard (CAL-06)** — Add a fast test (under the `unit-and-api`
-   Playwright project) asserting the operator `enum` served at `/openapi.json`
-   (`src/openApiDocument.ts`) is exactly equal (order-insensitive) to `calculatorOperators`
-   (`src/calculatorContracts.ts`), so adding/removing an operator without updating the
-   hand-written OpenAPI document fails the test. **Source:** review `05_RECOMMENDATIONS.md`
-   "Next Steps"; carried as item **CAL-06** in `WORKLIST_calculator-screenplay-bdd.md` (derived
-   2026-06-20). **Status: NOT STARTED.** This is the one review recommendation the CAL-01..05
-   cycle deliberately left out (not tied to a numbered risk); optional and Low priority.
+No open next steps remain. All prior recommendations (CAL-01..14 and the P-04/P-07 remediation)
+are delivered; see "Delivered" below.
 
 ### Delivered
 
@@ -199,6 +207,9 @@ One optional refinement remains open (CAL-06, below); all earlier next steps are
    a short architecture note covering the project layout (`features/`, `src/`, `tests/`), the
    `unit-and-api` vs `bdd` Playwright projects, and how `bddgen` generates the BDD specs. Linked
    from the README. Every claim checked against `playwright.config.ts` and `package.json`.
+2. ✅ **CAL-06/CAL-11/CAL-12** — DONE 2026-07-17 (PR #15). OpenAPI contract-drift guard, total UI
+   controller error handling, and closing the write-only `Remember` loop. See the "2026-07-17
+   optional-refinement close-out" entry under Resolved Risks above for detail and commits.
 
 ---
 
