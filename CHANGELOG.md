@@ -53,6 +53,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed the UI controller's `data-state` contract being non-total (CAL-11): `submitCalculation`
+  in `src/uiController.ts` now wraps its `fetch`/`response.json()` call in `try/catch`, routing
+  a network failure or unparseable response through the existing `showError(...)` path ("The
+  calculator service could not be reached."). Every submission now settles to `success` or
+  `error`; previously a failed fetch left an unhandled rejection and the element stuck at
+  `data-state="idle"`. Verified by a new `tests/uiController.spec.ts` that aborts the
+  `/api/calculations` route and asserts the settled error state. Suite grew 17 → 18.
 - Fixed `prepare:screenplay` mutating the sibling repository. `npm --prefix ../hand-baked-screenplay-pattern install`
   resolved this project's `file:../` reference from the *consumer's* directory and injected a
   circular `"calculator-screenplay-bdd": "file:../calculator-screenplay-bdd"` dependency into the
