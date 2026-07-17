@@ -19,7 +19,11 @@ import {
 import { createBdd, test } from 'playwright-bdd';
 import type { CalculationRequest, CalculatorOperator } from '../src/calculatorContracts.js';
 import { Calculate } from './calculatorTasks.js';
-import { TheApiCalculation, TheDisplayedCalculation } from './calculatorQuestions.js';
+import {
+  TheApiCalculation,
+  TheDisplayedCalculation,
+  TheRememberedCalculation,
+} from './calculatorQuestions.js';
 import { PlaywrightApiClient } from './screenplayApiClient.js';
 import { BrowseTheWeb } from './screenplayBrowseTheWeb.js';
 
@@ -56,6 +60,10 @@ Then(
     await actorFrom(this).attemptsTo(
       Calculate.shouldHaveBeenAccepted(),
       Ensure.that(TheApiCalculation.result(), equals(Number(expectedResult))),
+      // CAL-12: recall the request Calculate.usingTheApi remembered and prove
+      // it explains the observed result (closes the Remember loop; see
+      // TheRememberedCalculation in calculatorQuestions.ts).
+      Ensure.that(TheRememberedCalculation.result(), equals(Number(expectedResult))),
     );
   },
 );
@@ -96,6 +104,10 @@ Then(
   async function (this: CalculatorScenarioWorld, {}, expectedMessage: string) {
     await actorFrom(this).attemptsTo(
       Ensure.that(TheDisplayedCalculation.message(), equals(expectedMessage)),
+      // CAL-12: recall the request Calculate.usingTheBrowser remembered and
+      // prove it explains the displayed expression (closes the Remember
+      // loop; see TheRememberedCalculation in calculatorQuestions.ts).
+      Ensure.that(TheRememberedCalculation.expression(), equals(expectedMessage)),
     );
   },
 );

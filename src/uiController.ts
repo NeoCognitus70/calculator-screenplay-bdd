@@ -34,22 +34,31 @@ async function submitCalculation(formData: FormData): Promise<void> {
     return;
   }
 
-  const response = await fetch('/api/calculations', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
+  // The data-state contract is total: every submission must settle to
+  // 'success' or 'error', never stay stuck at 'idle' with an unhandled
+  // rejection. A network failure (offline, DNS, aborted request) or a
+  // response body that is not valid JSON both throw before `response.ok` can
+  // be checked, so both the fetch and the body parse are covered.
+  try {
+    const response = await fetch('/api/calculations', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
 
-  const body = (await response.json()) as CalculationSuccessResponse | ApiErrorResponse;
+    const body = (await response.json()) as CalculationSuccessResponse | ApiErrorResponse;
 
-  if (!response.ok) {
-    showError('details' in body ? body.details.join(' ') : 'The calculation failed.');
-    return;
+    if (!response.ok) {
+      showError('details' in body ? body.details.join(' ') : 'The calculation failed.');
+      return;
+    }
+
+    showResult((body as CalculationSuccessResponse).expression);
+  } catch {
+    showError('The calculator service could not be reached.');
   }
-
-  showResult((body as CalculationSuccessResponse).expression);
 }
 
 function readCalculationRequest(formData: FormData): CalculationRequest | undefined {
