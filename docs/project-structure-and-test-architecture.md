@@ -47,8 +47,12 @@ The `tests/` directory holds **two distinct things**, and the Playwright
 project split (below) is what keeps them separate:
 
 1. **Plain Playwright spec files** (`*.spec.ts`) — `api.spec.ts` (REST
-   integration) and `domain.spec.ts` (unit tests over the pure domain). These
-   are ordinary Playwright tests, not Gherkin-driven.
+   integration), `domain.spec.ts` (unit tests over the pure domain), and
+   `uiController.spec.ts` (a browser-backed test that loads the UI, aborts the
+   `/api/calculations` route, and asserts the controller settles to an error
+   state). These are ordinary Playwright tests, not Gherkin-driven — but
+   `uiController.spec.ts` uses the `page` fixture like the `bdd` project's
+   specs do, it just is not generated from a feature file.
 2. **Screenplay glue for the BDD layer** — `calculatorSteps.ts` (the Gherkin
    step bindings), plus the tasks/interactions/questions
    (`calculatorTasks.ts`, `calculatorInteractions.ts`, `calculatorQuestions.ts`)
@@ -63,7 +67,7 @@ kinds of `tests/` code stay apart:
 
 | Project | `testDir` | What it runs |
 |---|---|---|
-| `unit-and-api` | `tests` | The plain spec files, matched by `testMatch: /.*\.spec\.ts/` — i.e. `tests/api.spec.ts` and `tests/domain.spec.ts`. |
+| `unit-and-api` | `tests` | The plain spec files, matched by `testMatch: /.*\.spec\.ts/` — i.e. `tests/api.spec.ts`, `tests/domain.spec.ts`, and `tests/uiController.spec.ts`. The last of these is browser-backed (it uses the `page` fixture), so despite its name this project is not purely non-browser. |
 | `bdd` | the `playwright-bdd` output dir | The Playwright specs **generated** from the Gherkin features, run under `devices['Desktop Chrome']`. |
 
 Because `unit-and-api` matches only `*.spec.ts`, the Screenplay glue files in
@@ -107,6 +111,8 @@ or a step.
 ```text
 domain.spec.ts        unit         fast checks on the pure calculator rules
 api.spec.ts           integration  the REST boundary directly
+uiController.spec.ts  integration  browser-backed controller error handling
+                                    (network-failure state, no Gherkin)
 *.feature (via bdd)   acceptance   business-readable API + UI examples,
                                     automated through the Screenplay layer
 ```
