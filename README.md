@@ -38,7 +38,9 @@ features/
   calculator-ui.feature   BDD examples for the browser workflow.
 
 tests/
-  *.spec.ts               Unit and REST integration tests.
+  api.spec.ts             REST integration tests.
+  domain.spec.ts          Unit tests over the pure calculator domain.
+  uiController.spec.ts    Browser-backed controller test (network-failure error state).
   calculator*.ts          Screenplay tasks, interactions, questions, and steps.
   screenplay*.ts          Playwright-to-Screenplay abilities/adapters.
 ```

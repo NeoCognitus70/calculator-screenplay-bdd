@@ -46,6 +46,11 @@ export default defineConfig({
       name: 'unit-and-api',
       testDir: 'tests',
       testMatch: /.*\.spec\.ts/,
+      // No devices['Desktop Chrome'] profile here (deliberate): only
+      // uiController.spec.ts uses the page fixture, and Playwright's default
+      // browser settings are sufficient for its one network-abort scenario —
+      // headless Chromium either way. Add the profile if a second
+      // browser-backed spec needs a specific viewport/UA.
     },
     {
       name: 'bdd',
