@@ -89,6 +89,23 @@ test.describe('Calculator REST API', () => {
     });
   });
 
+  test('returns 413 when the request body exceeds the size limit', async ({ request }) => {
+    // The cap is enforced while streaming the body, before JSON.parse runs, so
+    // the payload does not need to be valid JSON — only oversized.
+    const oversizedBody = Buffer.from('a'.repeat(10 * 1024 + 1));
+
+    const response = await request.post('/api/calculations', {
+      headers: { 'content-type': 'application/json' },
+      data: oversizedBody,
+    });
+
+    expect(response.status()).toBe(413);
+    expect(await response.json()).toMatchObject({
+      error: 'Payload Too Large',
+      details: [expect.stringContaining('exceeds the 10240-byte limit')],
+    });
+  });
+
   test('returns 404 for an unknown route', async ({ request }) => {
     const response = await request.get('/api/does-not-exist');
 

@@ -69,6 +69,16 @@ export const openApiDocument = {
               },
             },
           },
+          '413': {
+            description: 'The request body exceeds the server\'s size limit.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ApiErrorResponse',
+                },
+              },
+            },
+          },
         },
       },
     },

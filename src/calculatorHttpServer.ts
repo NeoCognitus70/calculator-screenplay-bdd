@@ -18,6 +18,10 @@ import {
 } from './calculatorDomain.js';
 import { openApiDocument } from './openApiDocument.js';
 
+const MAX_REQUEST_BODY_BYTES = 10 * 1024;
+
+class RequestBodyTooLargeError extends Error {}
+
 export interface CalculatorServer {
   readonly server: Server;
   listen(): Promise<void>;
@@ -111,6 +115,14 @@ async function handleCalculation(
     const calculationRequest = validateCalculationRequest(body);
     sendJson(response, 200, calculate(calculationRequest));
   } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) {
+      sendJson(response, 413, {
+        error: 'Payload Too Large',
+        details: [error.message],
+      });
+      return;
+    }
+
     if (error instanceof SyntaxError) {
       sendJson(response, 400, {
         error: 'Bad Request',
@@ -144,9 +156,19 @@ async function handleCalculation(
 
 async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
+  let totalBytes = 0;
 
   for await (const chunk of request) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    totalBytes += buffer.byteLength;
+
+    if (totalBytes > MAX_REQUEST_BODY_BYTES) {
+      throw new RequestBodyTooLargeError(
+        `Request body exceeds the ${MAX_REQUEST_BODY_BYTES}-byte limit.`,
+      );
+    }
+
+    chunks.push(buffer);
   }
 
   const rawBody = Buffer.concat(chunks).toString('utf8');
