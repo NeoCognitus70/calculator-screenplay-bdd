@@ -78,10 +78,11 @@ on a global cache location.
 
 ## Public-readiness status
 
-This repository remains private. The
+This repository was made public on 2026-07-14. The
 [2026-07-14 public-readiness audit](./docs/audits/2026-07-14_public-readiness.md) records the
-technical evidence and owner decisions required before any visibility change. Publication is a
-separate, explicit action; merging audit/remediation changes does not authorise it.
+evidence and owner decisions that preceded the change; its Publication Runbook's post-change
+checks (anonymous clone and `npm run verify`, dependency/licence visibility, the `main` ruleset,
+and secret scanning/push protection) were completed and verified at publication time.
 
 ## Run The Application
 

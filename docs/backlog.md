@@ -7,12 +7,11 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 9 — closes out the 2026-07-06 `CLAUDE_Fable_5` review cycle: the optional
-teaching/robustness refinements left open by v8 (CAL-06, CAL-11, CAL-12) are now delivered, so
-every finding from that review has a recorded disposition. No outstanding items remain.
-**Last Updated:** 2026-07-17
-**Based on:** `main` at `f52e72c` (branch `worklist/cal-06-contract-drift-guard`, PR #15), both
-code reviews under `.review/`, P-04 licensing evidence, and
+**Version:** 10 — records the README public-readiness closure (TRIAGE-01, review v2 Risk 1) and
+corrects the stale "Based on" reference (review v2 Risk 5). No outstanding items remain.
+**Last Updated:** 2026-07-19
+**Based on:** `main` at `d2b7175` (merge of PR #16, code review v2), both code reviews under
+`.review/`, P-04 licensing evidence, and
 [`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
@@ -36,6 +35,24 @@ _No outstanding risks._
 ### Resolved Risks
 
 Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### 2026-07-19 public-readiness closure (TRIAGE-01) ✅ Resolved
+
+Code review v2 (`.review/CODE_REVIEW_CLAUDE_Fable_5_v2_20260718T0032Z/`, Risk 1) found the
+README's "Public-readiness status" section still stated the repository "remains private", even
+though the 2026-07-14 P-07 publication action plan completed Stage 1: Calculator was made public
+at 2026-07-14T16:49:29Z, and every mandatory post-change check passed (anonymous repo/commit/
+LICENSE/Actions/README visibility, disposable-clone `npm run verify` 16/16 and `npm audit` 0, the
+`main` ruleset `main: PR + verify (Node 20)` active, and secret scanning/push protection/
+dependency alerts/Dependabot security updates enabled) — see
+`PORTFOLIO_P07_PUBLICATION_ACTION_PLAN_2026-07-14.md` (portfolio root) Stage 1 evidence log for
+the full record.
+
+- README's "Public-readiness status" section now states the repository was made public on
+  2026-07-14 and that the runbook's post-change checks were completed and verified.
+- This entry records that closure in the backlog; the stale "Based on" header reference
+  (`f52e72c`, a PR branch tip rather than a `main` merge commit) is corrected above (review
+  Risk 5, folded into this closure per the triage worklist).
 
 #### 2026-07-17 optional-refinement close-out (CAL-06, CAL-11, CAL-12) ✅ Resolved
 
