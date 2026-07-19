@@ -7,11 +7,12 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 10 — records the README public-readiness closure (TRIAGE-01, review v2 Risk 1) and
-corrects the stale "Based on" reference (review v2 Risk 5). No outstanding items remain.
+**Version:** 11 — records the TRIAGE-02..04 close-out (review v2 Risks 2–4: request-size cap,
+structure-doc currency, CHANGELOG 0.2.0 cut). Every review v2 finding now has a recorded
+disposition. No outstanding items remain.
 **Last Updated:** 2026-07-19
-**Based on:** `main` at `d2b7175` (merge of PR #16, code review v2), both code reviews under
-`.review/`, P-04 licensing evidence, and
+**Based on:** `main` at `b4c891a` (merge of PR #20), both code reviews under `.review/`, P-04
+licensing evidence, and
 [`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
@@ -35,6 +36,22 @@ _No outstanding risks._
 ### Resolved Risks
 
 Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### 2026-07-19 review v2 close-out (TRIAGE-02..04) ✅ Resolved
+
+Code review v2's remaining findings, triaged into `WORKLIST_calculator-screenplay-bdd.md`
+(portfolio root) alongside TRIAGE-01, are now delivered:
+
+| Item | Review finding | Severity | Resolution | Commit / PR |
+|---|---|---|---|---|
+| **TRIAGE-02** | Risk 2 — `readJsonBody` buffered an unbounded request body, an audit-flagged refinement never actioned or declined | Low | `readJsonBody` (`src/calculatorHttpServer.ts`) now counts bytes while streaming and rejects a body over 10 KiB with `413` + the standard `ApiErrorResponse` shape, before `JSON.parse` runs; documented in `src/openApiDocument.ts` alongside the existing `400`/`422` entries. New test in `tests/api.spec.ts`. Suite 18 → 19. | `b0ce1ac` / PR #18 |
+| **TRIAGE-03** | Risk 3 — README and the structure doc still named only `api.spec.ts`/`domain.spec.ts` and described `unit-and-api` as non-browser, drift left behind by CAL-11's `uiController.spec.ts` | Low | README and `docs/project-structure-and-test-architecture.md` now name all three spec files and describe `uiController.spec.ts` as browser-backed; added a comment on `unit-and-api` in `playwright.config.ts` explaining the deliberately absent device profile. No behaviour change. | `5ee3e95` / PR #19 |
+| **TRIAGE-04** | Risk 4 — `CHANGELOG.md` had accumulated five weeks of shipped work under one `[Unreleased]` block since `[0.1.0]`, contradicting the SemVer claim | Low | Moved `[Unreleased]` content into a dated `## [0.2.0] — 2026-07-19` section (append-only); added entries for TRIAGE-01..03; bumped `package.json` version 0.1.0 → 0.2.0. | `a91920e` / PR #20 |
+
+`npm run verify` was green after every commit; 19/19 Playwright tests on `main`. Combined with
+the 2026-07-19 public-readiness closure below (TRIAGE-01, Risks 1 and 5), this closes every
+finding from code review v2 (`.review/CODE_REVIEW_CLAUDE_Fable_5_v2_20260718T0032Z/`) with a
+recorded disposition. Risk 6 (Info) needed no action per the review's own severity legend.
 
 #### 2026-07-19 public-readiness closure (TRIAGE-01) ✅ Resolved
 
@@ -199,14 +216,14 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
 | **Total Outstanding** | **0** | **—** | |
-| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) | ~3 hrs + 3 review cycles | |
+| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) | ~3 hrs + 4 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-No open next steps remain. All prior recommendations (CAL-01..14 and the P-04/P-07 remediation)
-are delivered; see "Delivered" below.
+No open next steps remain. All prior recommendations (CAL-01..14, the P-04/P-07 remediation, and
+code review v2 / TRIAGE-01..04) are delivered; see "Delivered" below.
 
 ### Delivered
 
