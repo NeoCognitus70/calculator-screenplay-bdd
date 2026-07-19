@@ -19,8 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-07-19
+
 ### Added
 
+- Added a request-body size cap (TRIAGE-02, review v2 Risk 2): `readJsonBody` in
+  `src/calculatorHttpServer.ts` now counts bytes while streaming and rejects a body over 10 KiB
+  with `413 Payload Too Large` (the standard `ApiErrorResponse` shape), before `JSON.parse` runs.
+  The response is documented in `src/openApiDocument.ts` alongside the endpoint's existing
+  `400`/`422` entries. Suite grew 18 → 19.
 - Added a [publication-readiness audit](./docs/audits/2026-07-14_public-readiness.md) covering
   source and GitHub history, licences, generated and large artefacts, documentation/CI safety,
   dependency state, and clean bootstrap evidence. The repository remains private pending explicit
@@ -53,6 +60,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed the README's "Public-readiness status" section stating the repository "remains private"
+  (TRIAGE-01, review v2 Risk 1): the repository was actually made public on 2026-07-14T16:49:29Z,
+  with every publication-runbook post-change check passed. The section now states the real status,
+  dated, with a link to the audit. `docs/backlog.md` bumped v9 → v10 recording the closure and
+  correcting a stale "Based on" header reference (review v2 Risk 5).
 - Fixed the UI controller's `data-state` contract being non-total (CAL-11): `submitCalculation`
   in `src/uiController.ts` now wraps its `fetch`/`response.json()` call in `try/catch`, routing
   a network failure or unparseable response through the existing `showError(...)` path ("The
@@ -79,6 +91,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated the README and `docs/project-structure-and-test-architecture.md` to name all three
+  `tests/*.spec.ts` files — `api.spec.ts`, `domain.spec.ts`, and `uiController.spec.ts` — and
+  describe the last as browser-backed (TRIAGE-03, review v2 Risk 3); the docs previously named
+  only the first two and described `unit-and-api` as non-browser, drift left behind by CAL-11.
+  Added a comment on `unit-and-api` in `playwright.config.ts` explaining the deliberately absent
+  `devices['Desktop Chrome']` profile.
 - Updated the CI actions to their current v7 majors and disabled persisted checkout credentials.
 - Raised the documented and machine-readable Node.js floor to 20, matching the sibling project and
   CI, and made `npm ci` the reproducible Calculator install command.

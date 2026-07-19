@@ -1,6 +1,6 @@
 {
   "name": "calculator-screenplay-bdd",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A pedagogical calculator application tested with Playwright, BDD, and a hand-baked Screenplay Pattern implementation.",
   "license": "Apache-2.0",
   "type": "module",
