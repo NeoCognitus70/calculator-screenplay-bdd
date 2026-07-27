@@ -61,7 +61,7 @@ changing dependency resolution; set OpenAPI `info.version` per the confirmed pol
 package release); add a deterministic fast test — included in `npm run verify` — that fails when
 package / lock-root / OpenAPI versions diverge. **Depends on CAL-15.** **Code/config + test + docs.**
 
-#### Item CAL-17: Blank browser operands silently coerce to zero — Score: 12 — 🔶 OPEN (MEDIUM, P1)
+#### Item CAL-17: Blank browser operands silently coerce to zero — Score: 12 — ✅ RESOLVED (MEDIUM, P1)
 
 **Priority Score:** Security Impact (2) + Breakage Probability (6) + Maintenance Burden (4) = **12 points**
 **Finding (Codex Risk 2):** the UI adapter passes operands through `Number(...)`, so an empty or
@@ -71,6 +71,17 @@ while numeric zero/negatives/decimals still reach the API; reuse the shared `isC
 guard where practical; add a controller/browser decision-table test over each blank operand,
 malformed/non-finite input, zero and a valid decimal, asserting the settled accessible error/success
 state. **Depends on CAL-15.** **Code + tests + docs.**
+**Status:** ✅ RESOLVED 2026-07-27 (CAL-17). `readNumber` (`src/uiController.ts`) rejects
+empty/whitespace operands (`value.trim() === ''`) as missing input before `Number(...)`; zero,
+negatives and decimals still pass. Decision-table browser test in `tests/uiController.spec.ts`
+(blank-left, blank-right, zero, decimal) asserts the settled accessible `data-state`/message; the
+`novalidate` form keeps the controller's feedback authoritative. **`isCalculatorOperator` not
+imported (documented "where practical" exception):** the browser entry module is served standalone
+via the static allow-list, so a runtime import of `calculatorContracts.js` would 404 — the local
+`uiOperators` literal is instead tied to `CalculatorOperator` via `satisfies` (compile-time drift
+check). Non-finite input is defended in depth by `readNumber`'s `Number.isFinite` guard and the
+server's existing 400 test. No Gherkin (CAL-15 did not record missing input as a BDD rule). Suite
+19 → 23 on this branch. CHANGELOG `[Unreleased]` note added.
 
 #### Item CAL-18: Port parsing accepts numeric prefixes — Score: 6 — 🔷 OPEN (LOW, P2)
 
