@@ -7,13 +7,27 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 11 — records the TRIAGE-02..04 close-out (review v2 Risks 2–4: request-size cap,
-structure-doc currency, CHANGELOG 0.2.0 cut). Every review v2 finding now has a recorded
-disposition. No outstanding items remain.
-**Last Updated:** 2026-07-19
-**Based on:** `main` at `b4c891a` (merge of PR #20), both code reviews under `.review/`, P-04
-licensing evidence, and
+**Version:** 12 — opens the **fourth** review-derived cycle (Codex GPT-5 v1,
+[`.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/`](../.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/),
+merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/22) as
+`5f27eca`). It records **CAL-15..20** (review Risks 1–5 + governance) as **Open** — so v11's "no
+outstanding items remain" no longer holds — and settles the two policy decisions the review raised
+(see "Decisions" below). Risk 6 (Info) is optional and not promoted. The full per-item acceptance
+lives in `WORKLIST_calculator-screenplay-bdd.md` (portfolio root); this file records the findings,
+severities, dependencies and status.
+**Last Updated:** 2026-07-27
+**Based on:** `main` at `5f27eca` (merge of the Codex GPT-5 v1 review, PR #22), all three code
+reviews under `.review/`, P-04 licensing evidence, and
 [`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
+
+**Decisions (owner-confirmed 2026-07-27, pre-loop — govern CAL-16/17):**
+- **API version tracks the package release.** OpenAPI `info.version` follows `package.json` (0.2.0);
+  no independent API-version policy and **no ADR** required for now. CAL-16 adds a static drift check
+  that fails when package / lock-root / OpenAPI versions diverge under this policy.
+- **Blank operands are invalid input, never zero.** The browser UI rejects null/empty/whitespace
+  operands before `Number(...)` conversion (CAL-17); numeric zero, negatives and decimals stay valid.
+- Preserved: the accepted ADR 0001 sibling-checkout strategy, the Node 20 required CI gate, and the
+  existing `400`/`413`/`422` response semantics.
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
 ordered by priority score (highest first). It is the project's **source of truth** for item
@@ -29,7 +43,70 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-_No outstanding risks._
+The **fourth code review** (Codex GPT-5 v1, 2026-07-23, merged via PR #22) raised five current-state
+findings absent from v11 plus one optional INFO item. They are triaged into
+`WORKLIST_calculator-screenplay-bdd.md` as CAL-15..20 and are being worked one item per
+`loop-worklist` iteration (a coupled loop — Calculator consumes `hand-baked-screenplay-pattern` via
+`file:../`, so each iteration rebuilds the sibling). Ordered highest priority first; CAL-15
+(governance, this record) and CAL-16/17 are the two MEDIUMs.
+
+#### Item CAL-16: Release metadata not single-sourced — Score: 12 — 🔶 OPEN (MEDIUM, P1)
+
+**Priority Score:** Security Impact (1) + Breakage Probability (5) + Maintenance Burden (6) = **12 points**
+**Finding (Codex Risk 1):** the version is asserted in several places (`package.json`,
+`package-lock.json` root fields, OpenAPI `info.version`) that can drift apart; nothing fails when
+they do.
+**Planned fix:** align both `package-lock.json` root version fields to `package.json` (0.2.0) without
+changing dependency resolution; set OpenAPI `info.version` per the confirmed policy (tracks the
+package release); add a deterministic fast test — included in `npm run verify` — that fails when
+package / lock-root / OpenAPI versions diverge. **Depends on CAL-15.** **Code/config + test + docs.**
+
+#### Item CAL-17: Blank browser operands silently coerce to zero — Score: 12 — 🔶 OPEN (MEDIUM, P1)
+
+**Priority Score:** Security Impact (2) + Breakage Probability (6) + Maintenance Burden (4) = **12 points**
+**Finding (Codex Risk 2):** the UI adapter passes operands through `Number(...)`, so an empty or
+whitespace-only field becomes `0` and calculates silently instead of reporting invalid input.
+**Planned fix (confirmed policy — reject):** reject null/empty/whitespace operands before conversion
+while numeric zero/negatives/decimals still reach the API; reuse the shared `isCalculatorOperator`
+guard where practical; add a controller/browser decision-table test over each blank operand,
+malformed/non-finite input, zero and a valid decimal, asserting the settled accessible error/success
+state. **Depends on CAL-15.** **Code + tests + docs.**
+
+#### Item CAL-18: Port parsing accepts numeric prefixes — Score: 6 — 🔷 OPEN (LOW, P2)
+
+**Priority Score:** Security Impact (0) + Breakage Probability (3) + Maintenance Burden (3) = **6 points**
+**Finding (Codex Risk 3):** port parsing accepts values like `3100abc` (numeric prefix) and reads
+the environment two incompatible ways across the app and `playwright.config.ts`.
+**Planned fix:** one shared strict full-string parser rejecting blank/whitespace, fractional,
+exponent, signed out-of-range and trailing-character values, used by both app startup and Playwright
+config; table-driven tests; default port 3100 and the `CALCULATOR_BASE_URL` override preserved.
+**Code + tests + docs.**
+
+#### Item CAL-19: JSON media type not enforced; no 415 path — Score: 7 — 🔷 OPEN (LOW, P2)
+
+**Priority Score:** Security Impact (1) + Breakage Probability (3) + Maintenance Burden (3) = **7 points**
+**Finding (Codex Risk 4):** `POST /api/calculations` does not enforce the documented `application/json`
+media type and has no `415` response.
+**Planned fix:** accept `application/json` case-insensitively (optional `charset`); return `415` with
+the standard `ApiErrorResponse` shape for missing/unsupported types before body parsing; document
+`415` in OpenAPI; integration tests for plain JSON, JSON+charset, missing type and `text/plain`. The
+existing `400`/`413`/`422` paths remain distinct. **Code + tests + docs.**
+
+#### Item CAL-20: `CalculatorServer.listen()` ignores bind failures — Score: 6 — 🔷 OPEN (LOW, P2)
+
+**Priority Score:** Security Impact (0) + Breakage Probability (4) + Maintenance Burden (2) = **6 points**
+**Finding (Codex Risk 5):** `listen()` resolves its promise without handling an `error` (e.g. a bind
+failure), so a failed bind can surface as an uncaught process error.
+**Planned fix:** attach a one-shot `error` listener before `listen`, reject the promise on bind
+failure, remove temporary listeners on both paths; a lifecycle test binds one server then attempts a
+second bind to the same host/port and asserts a controlled rejection with no leak. **Run last.**
+**Code + tests + docs.**
+
+> **Not promoted:** Risk 6 (quantitative coverage/trend evidence) is INFO and explicitly optional;
+> OpenAPI example conformance is covered by CAL-16/19's focused contract checks; Docker Compose is
+> N/A; action-SHA pins, an extra Node LTS lane and provider release pinning stay optional/
+> trigger-bound. ADR 0001's floating sibling strategy is accepted until its external-consumer
+> trigger fires.
 
 ---
 
@@ -213,17 +290,19 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 0 | — | — |
-| LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **0** | **—** | |
+| MEDIUM (10–19) | 2 | — | CAL-16, CAL-17 — 🔶 OPEN (Codex review v1) |
+| LOW (0–9) | 3 | — | CAL-18, CAL-19, CAL-20 — 🔷 OPEN (Codex review v1) |
+| **Total Outstanding** | **5** | **—** | CAL-16..20; governance CAL-15 recorded by this backlog edit |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) | ~3 hrs + 4 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-No open next steps remain. All prior recommendations (CAL-01..14, the P-04/P-07 remediation, and
-code review v2 / TRIAGE-01..04) are delivered; see "Delivered" below.
+**Open — fourth review cycle (Codex GPT-5 v1):** CAL-16..20 (see "Outstanding Risks" above), being
+worked one item per `loop-worklist` iteration off this CAL-15 governance record. Everything earlier
+(CAL-01..14, the P-04/P-07 remediation, and code review v2 / TRIAGE-01..04) is delivered; see
+"Delivered" below.
 
 ### Delivered
 
