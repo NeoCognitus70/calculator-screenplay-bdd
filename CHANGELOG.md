@@ -27,6 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   version aligned to the package release (the confirmed policy). A deterministic drift test
   (`tests/api.spec.ts`) now fails if `package.json`, the lockfile root, and the OpenAPI version ever
   diverge. No dependency resolution changed.
+- Reject blank browser operands instead of silently calculating them as zero (CAL-17, Codex review
+  v1 Risk 2): `readNumber` in `src/uiController.ts` now treats an empty or whitespace-only operand
+  as *missing input* — previously `Number('')`/`Number('   ')` were `0`, so a blank field produced a
+  silent zero result. Numeric zero, negatives and decimals still reach the API. The `novalidate`
+  form means the controller's accessible `data-state` feedback owns validation; a new decision-table
+  browser test (`tests/uiController.spec.ts`) covers blank-left, blank-right, zero and decimal
+  operands. The local UI operator list is tied to the shared `CalculatorOperator` type via
+  `satisfies` (the browser entry module is served standalone, so it cannot import the runtime guard).
 
 ## [0.2.0] — 2026-07-19
 

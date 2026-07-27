@@ -12,6 +12,15 @@ import {
   type CalculatorOperator,
 } from './calculatorContracts.js';
 
+// This module is served to the browser as a standalone ES file (see the static
+// allow-list in `calculatorHttpServer.ts`), so it must import only *types* from
+// sibling modules — a runtime import (the shared `isCalculatorOperator` guard or
+// the `calculatorOperators` array) would make the browser fetch an unserved
+// `/calculatorContracts.js` and fail to load. The operator set is therefore a
+// local literal, but `satisfies` ties it to the shared `CalculatorOperator`
+// type at compile time, so an entry that is not a valid operator fails the build.
+const uiOperators = ['add', 'subtract', 'multiply', 'divide'] as const satisfies readonly CalculatorOperator[];
+
 const form = requireElement<HTMLFormElement>('calculator-form');
 const resultOutput = requireElement<HTMLOutputElement>('calculation-result');
 
@@ -86,17 +95,21 @@ function readNumber(value: FormDataEntryValue | null): number | undefined {
     return undefined;
   }
 
+  // Reject blank/whitespace-only input as *missing*, not as the number zero:
+  // `Number('')` and `Number('   ')` are both `0`, so without this guard an
+  // empty operand would silently calculate as zero. A trimmed-empty string is
+  // missing input. Numeric zero ('0'), negatives and decimals still pass, and a
+  // non-finite value (e.g. 'abc') is rejected by the `Number.isFinite` check.
+  if (value.trim() === '') {
+    return undefined;
+  }
+
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function isUiOperator(value: FormDataEntryValue | null): value is CalculatorOperator {
-  return (
-    value === 'add' ||
-    value === 'subtract' ||
-    value === 'multiply' ||
-    value === 'divide'
-  );
+  return typeof value === 'string' && (uiOperators as readonly string[]).includes(value);
 }
 
 function showResult(message: string): void {
