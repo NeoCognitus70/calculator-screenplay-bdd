@@ -50,7 +50,7 @@ findings absent from v11 plus one optional INFO item. They are triaged into
 `file:../`, so each iteration rebuilds the sibling). Ordered highest priority first; CAL-15
 (governance, this record) and CAL-16/17 are the two MEDIUMs.
 
-#### Item CAL-16: Release metadata not single-sourced — Score: 12 — 🔶 OPEN (MEDIUM, P1)
+#### Item CAL-16: Release metadata not single-sourced — Score: 12 — ✅ RESOLVED (MEDIUM, P1)
 
 **Priority Score:** Security Impact (1) + Breakage Probability (5) + Maintenance Burden (6) = **12 points**
 **Finding (Codex Risk 1):** the version is asserted in several places (`package.json`,
@@ -60,6 +60,13 @@ they do.
 changing dependency resolution; set OpenAPI `info.version` per the confirmed policy (tracks the
 package release); add a deterministic fast test — included in `npm run verify` — that fails when
 package / lock-root / OpenAPI versions diverge. **Depends on CAL-15.** **Code/config + test + docs.**
+**Status:** ✅ RESOLVED 2026-07-27 (CAL-16). `package-lock.json`'s two root version fields refreshed
+`0.1.0 → 0.2.0` via `npm install --package-lock-only` (no dependency resolution change, `npm audit`
+0); OpenAPI `info.version` set to `0.2.0` (tracks the package release, confirmed policy); a
+deterministic drift test in `tests/api.spec.ts` asserts `package.json` == lockfile root (both
+fields) == OpenAPI `info.version`, and the CAL-06 operator-enum guard stays green. Suite 19 → 20.
+CHANGELOG `[Unreleased]` note added. *(Risk Summary count reconciled to zero-outstanding at CAL-20
+per its acceptance — the whole cycle's close-out.)*
 
 #### Item CAL-17: Blank browser operands silently coerce to zero — Score: 12 — ✅ RESOLVED (MEDIUM, P1)
 

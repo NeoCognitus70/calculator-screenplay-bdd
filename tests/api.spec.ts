@@ -5,6 +5,7 @@
  * They check status codes and response bodies without paying the cost of a
  * browser for cases the API can prove directly.
  */
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { calculatorOperators } from '../src/calculatorContracts.js';
 
@@ -143,5 +144,27 @@ test.describe('Calculator REST API', () => {
 
     expect(new Set(publishedOperators)).toEqual(new Set(calculatorOperators));
     expect(publishedOperators).toHaveLength(calculatorOperators.length);
+  });
+
+  test('keeps the release version single-sourced across package, lockfile and OpenAPI', async ({
+    request,
+  }) => {
+    // Single-source policy (CAL-15/16): package.json is the source of truth for
+    // the release version; the lockfile's two root version fields and the
+    // OpenAPI info.version must all match it. This deterministic check fails if
+    // a bump in one place silently drifts from the others.
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string };
+    const lock = JSON.parse(readFileSync('package-lock.json', 'utf8')) as {
+      version: string;
+      packages: Record<string, { version?: string }>;
+    };
+    const contract = await request.get('/openapi.json');
+    expect(contract.status()).toBe(200);
+    const openapi = (await contract.json()) as { info: { version: string } };
+
+    const source = pkg.version;
+    expect(lock.version).toBe(source);
+    expect(lock.packages['']?.version).toBe(source);
+    expect(openapi.info.version).toBe(source);
   });
 });
