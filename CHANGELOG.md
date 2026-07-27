@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Single-sourced the release version (CAL-16, Codex review v1 Risk 1): `package-lock.json`'s two
+  root version fields and the OpenAPI `info.version` (`src/openApiDocument.ts`) were still `0.1.0`
+  while `package.json` declared `0.2.0`. The lockfile was refreshed via npm tooling and the OpenAPI
+  version aligned to the package release (the confirmed policy). A deterministic drift test
+  (`tests/api.spec.ts`) now fails if `package.json`, the lockfile root, and the OpenAPI version ever
+  diverge. No dependency resolution changed.
+
 ## [0.2.0] — 2026-07-19
 
 ### Added

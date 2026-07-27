@@ -11,7 +11,10 @@ export const openApiDocument = {
   openapi: '3.1.0',
   info: {
     title: 'Calculator Screenplay BDD API',
-    version: '0.1.0',
+    // Policy (CAL-15): the API version tracks the package release. `package.json`
+    // is the single source of truth; the CAL-16 drift test fails if this, the
+    // lockfile root, and `package.json` ever diverge.
+    version: '0.2.0',
     description: 'A tiny REST API used to teach BDD and the Screenplay Pattern.',
   },
   paths: {
