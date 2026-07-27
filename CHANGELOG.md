@@ -35,6 +35,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   browser test (`tests/uiController.spec.ts`) covers blank-left, blank-right, zero and decimal
   operands. The local UI operator list is tied to the shared `CalculatorOperator` type via
   `satisfies` (the browser entry module is served standalone, so it cannot import the runtime guard).
+- Centralised strict port parsing (CAL-18, Codex review v1 Risk 3): the app (`src/environment.ts`)
+  and `playwright.config.ts` previously parsed `CALCULATOR_PORT` two incompatible ways — both with
+  `Number.parseInt`, which accepts a numeric prefix (`3100abc` → `3100`) and truncates fractions and
+  exponents (`1.5`/`1e3` → `1`), and the config did not range-check at all. A new shared
+  `src/parsePort.ts` accepts only a full string of digits naming an integer in `[1, 65535]` and both
+  call sites now use it; its error states the accepted format. Table-driven tests
+  (`tests/parsePort.spec.ts`) cover `1`, `65535`, `0`, `65536`, `1.5`, `1e3`, `3100abc`, blank and
+  whitespace. Default port `3100` and the `CALCULATOR_BASE_URL` override are unchanged.
 
 ## [0.2.0] — 2026-07-19
 

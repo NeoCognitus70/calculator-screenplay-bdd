@@ -8,8 +8,11 @@
  */
 import { defineConfig, devices } from '@playwright/test';
 import { defineBddConfig } from 'playwright-bdd';
+import { parsePort } from './src/parsePort.js';
 
-const port = Number.parseInt(process.env.CALCULATOR_PORT ?? '3100', 10);
+// Parse the port with the same strict parser the application uses (CAL-18), so
+// the test toolchain and the app never disagree about what CALCULATOR_PORT means.
+const port = parsePort(process.env.CALCULATOR_PORT ?? '3100');
 const baseUrl = process.env.CALCULATOR_BASE_URL ?? `http://127.0.0.1:${port}`;
 
 const bddTestDir = defineBddConfig({
