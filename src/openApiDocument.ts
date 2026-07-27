@@ -82,6 +82,16 @@ export const openApiDocument = {
               },
             },
           },
+          '415': {
+            description: 'The Content-Type is missing or is not application/json.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ApiErrorResponse',
+                },
+              },
+            },
+          },
         },
       },
     },

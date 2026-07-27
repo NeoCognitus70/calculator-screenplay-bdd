@@ -110,6 +110,18 @@ async function handleCalculation(
   request: IncomingMessage,
   response: ServerResponse,
 ): Promise<void> {
+  // Enforce the documented JSON media type *before* reading the body, so an
+  // unsupported or missing Content-Type is a clean 415 rather than reaching the
+  // JSON parser (which would surface as a 400). This does not touch the 413
+  // size-cap or the 400/422 body paths below.
+  if (!isJsonContentType(request)) {
+    sendJson(response, 415, {
+      error: 'Unsupported Media Type',
+      details: ['Content-Type must be application/json.'],
+    });
+    return;
+  }
+
   try {
     const body = await readJsonBody(request);
     const calculationRequest = validateCalculationRequest(body);
@@ -152,6 +164,18 @@ async function handleCalculation(
       details: ['The calculator failed unexpectedly.'],
     });
   }
+}
+
+function isJsonContentType(request: IncomingMessage): boolean {
+  const header = request.headers['content-type'];
+  if (typeof header !== 'string') {
+    return false;
+  }
+
+  // Accept `application/json` case-insensitively and ignore any parameters
+  // (e.g. `; charset=utf-8`). A missing or unsupported type returns false.
+  const mediaType = header.split(';', 1)[0]?.trim().toLowerCase();
+  return mediaType === 'application/json';
 }
 
 async function readJsonBody(request: IncomingMessage): Promise<unknown> {

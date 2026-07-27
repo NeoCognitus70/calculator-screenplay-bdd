@@ -35,6 +35,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   browser test (`tests/uiController.spec.ts`) covers blank-left, blank-right, zero and decimal
   operands. The local UI operator list is tied to the shared `CalculatorOperator` type via
   `satisfies` (the browser entry module is served standalone, so it cannot import the runtime guard).
+- Enforced the JSON media type on `POST /api/calculations` with a `415` contract path (CAL-19, Codex
+  review v1 Risk 4): the endpoint now accepts `application/json` case-insensitively (with an optional
+  `charset` parameter) and returns `415 Unsupported Media Type` — using the standard `ApiErrorResponse`
+  shape, before the body is read — for a missing or unsupported `Content-Type`. Documented in
+  `src/openApiDocument.ts`; focused tests in `tests/api.spec.ts` cover plain JSON, JSON with charset,
+  a missing type and `text/plain`. The existing `400`/`413`/`422` paths are untouched and stay green.
 
 ## [0.2.0] — 2026-07-19
 

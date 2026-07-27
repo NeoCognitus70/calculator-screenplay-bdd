@@ -100,7 +100,7 @@ exponent, signed out-of-range and trailing-character values, used by both app st
 config; table-driven tests; default port 3100 and the `CALCULATOR_BASE_URL` override preserved.
 **Code + tests + docs.**
 
-#### Item CAL-19: JSON media type not enforced; no 415 path — Score: 7 — 🔷 OPEN (LOW, P2)
+#### Item CAL-19: JSON media type not enforced; no 415 path — Score: 7 — ✅ RESOLVED (LOW, P2)
 
 **Priority Score:** Security Impact (1) + Breakage Probability (3) + Maintenance Burden (3) = **7 points**
 **Finding (Codex Risk 4):** `POST /api/calculations` does not enforce the documented `application/json`
@@ -109,6 +109,14 @@ media type and has no `415` response.
 the standard `ApiErrorResponse` shape for missing/unsupported types before body parsing; document
 `415` in OpenAPI; integration tests for plain JSON, JSON+charset, missing type and `text/plain`. The
 existing `400`/`413`/`422` paths remain distinct. **Code + tests + docs.**
+**Status:** ✅ RESOLVED 2026-07-27 (CAL-19). `handleCalculation` (`src/calculatorHttpServer.ts`)
+checks the media type via a new `isJsonContentType` helper **before** reading the body — accepting
+`application/json` case-insensitively and ignoring parameters (`; charset=utf-8`), returning `415
+Unsupported Media Type` + the standard `ApiErrorResponse` shape otherwise; the `413` size-cap and
+`400`/`422` body paths are untouched. OpenAPI gains the `415` response. Focused `tests/api.spec.ts`
+cases: charset → 200, missing `Content-Type` → 415, `text/plain` → 415 (plain JSON already covered).
+The BDD/Screenplay path and object-body tests were verified to send `application/json` (Playwright
+auto-sets it for object bodies), so the guard is safe. Suite 24 → 27. CHANGELOG `[Unreleased]` note.
 
 #### Item CAL-20: `CalculatorServer.listen()` ignores bind failures — Score: 6 — 🔷 OPEN (LOW, P2)
 
