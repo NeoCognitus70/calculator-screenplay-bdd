@@ -107,6 +107,38 @@ test.describe('Calculator REST API', () => {
     });
   });
 
+  test('accepts application/json with a charset parameter', async ({ request }) => {
+    const response = await request.post('/api/calculations', {
+      headers: { 'content-type': 'application/json; charset=utf-8' },
+      data: JSON.stringify({ leftOperand: 2, operator: 'add', rightOperand: 3 }),
+    });
+
+    expect(response.status()).toBe(200);
+    expect(await response.json()).toEqual({ result: 5, expression: '2 + 3 = 5' });
+  });
+
+  test('returns 415 when the Content-Type is missing', async ({ request }) => {
+    // A bare POST carries no Content-Type; the media-type guard runs before the
+    // body is read, so this is a clean 415 rather than a 400 from the parser.
+    const response = await request.post('/api/calculations');
+
+    expect(response.status()).toBe(415);
+    expect(await response.json()).toMatchObject({
+      error: 'Unsupported Media Type',
+      details: ['Content-Type must be application/json.'],
+    });
+  });
+
+  test('returns 415 for a non-JSON Content-Type', async ({ request }) => {
+    const response = await request.post('/api/calculations', {
+      headers: { 'content-type': 'text/plain' },
+      data: JSON.stringify({ leftOperand: 2, operator: 'add', rightOperand: 3 }),
+    });
+
+    expect(response.status()).toBe(415);
+    expect(await response.json()).toMatchObject({ error: 'Unsupported Media Type' });
+  });
+
   test('returns 404 for an unknown route', async ({ request }) => {
     const response = await request.get('/api/does-not-exist');
 

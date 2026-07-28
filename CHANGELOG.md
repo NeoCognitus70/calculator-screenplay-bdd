@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   call sites now use it; its error states the accepted format. Table-driven tests
   (`tests/parsePort.spec.ts`) cover `1`, `65535`, `0`, `65536`, `1.5`, `1e3`, `3100abc`, blank and
   whitespace. Default port `3100` and the `CALCULATOR_BASE_URL` override are unchanged.
+- Enforced the JSON media type on `POST /api/calculations` with a `415` contract path (CAL-19, Codex
+  review v1 Risk 4): the endpoint now accepts `application/json` case-insensitively (with an optional
+  `charset` parameter) and returns `415 Unsupported Media Type` — using the standard `ApiErrorResponse`
+  shape, before the body is read — for a missing or unsupported `Content-Type`. Documented in
+  `src/openApiDocument.ts`; focused tests in `tests/api.spec.ts` cover plain JSON, JSON with charset,
+  a missing type and `text/plain`. The existing `400`/`413`/`422` paths are untouched and stay green.
 
 ## [0.2.0] — 2026-07-19
 
