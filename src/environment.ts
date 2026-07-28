@@ -6,6 +6,8 @@
  * when environment access is centralized and validated at startup.
  */
 
+import { parsePort } from './parsePort.js';
+
 export interface CalculatorEnvironment {
   readonly host: string;
   readonly port: number;
@@ -16,16 +18,8 @@ export function readCalculatorEnvironment(
 ): CalculatorEnvironment {
   return {
     host: variables.CALCULATOR_HOST ?? '127.0.0.1',
-    port: readPort(variables.CALCULATOR_PORT ?? '3100'),
+    // Parsed by the shared strict parser so the app and the Playwright config
+    // agree on what a valid CALCULATOR_PORT is (CAL-18).
+    port: parsePort(variables.CALCULATOR_PORT ?? '3100'),
   };
-}
-
-function readPort(value: string): number {
-  const port = Number.parseInt(value, 10);
-
-  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
-    throw new Error('CALCULATOR_PORT must be an integer between 1 and 65535.');
-  }
-
-  return port;
 }

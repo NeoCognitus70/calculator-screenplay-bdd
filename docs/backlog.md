@@ -90,7 +90,7 @@ check). Non-finite input is defended in depth by `readNumber`'s `Number.isFinite
 server's existing 400 test. No Gherkin (CAL-15 did not record missing input as a BDD rule). Suite
 19 → 23 on this branch. CHANGELOG `[Unreleased]` note added.
 
-#### Item CAL-18: Port parsing accepts numeric prefixes — Score: 6 — 🔷 OPEN (LOW, P2)
+#### Item CAL-18: Port parsing accepts numeric prefixes — Score: 6 — ✅ RESOLVED (LOW, P2)
 
 **Priority Score:** Security Impact (0) + Breakage Probability (3) + Maintenance Burden (3) = **6 points**
 **Finding (Codex Risk 3):** port parsing accepts values like `3100abc` (numeric prefix) and reads
@@ -99,6 +99,14 @@ the environment two incompatible ways across the app and `playwright.config.ts`.
 exponent, signed out-of-range and trailing-character values, used by both app startup and Playwright
 config; table-driven tests; default port 3100 and the `CALCULATOR_BASE_URL` override preserved.
 **Code + tests + docs.**
+**Status:** ✅ RESOLVED 2026-07-27 (CAL-18). New `src/parsePort.ts` accepts only a full run of ASCII
+digits naming an integer in `[1, 65535]` (`/^\d+$/` + range) — rejecting numeric prefixes,
+fractions, exponents, signed and blank/whitespace values that `Number.parseInt`/`Number` silently
+mangle; its error states the accepted format. Both `src/environment.ts` (`readPort` deleted) and
+`playwright.config.ts` (its unchecked `parseInt` replaced) now call it — one rule, no second parser.
+Table-driven `tests/parsePort.spec.ts` covers `1`, `65535`, `0`, `65536`, `1.5`, `1e3`, `3100abc`,
+blank, whitespace (+ signed and padded). Default `3100` and `CALCULATOR_BASE_URL` unchanged; suite
+24 → 37 on this branch. CHANGELOG `[Unreleased]` note added.
 
 #### Item CAL-19: JSON media type not enforced; no 415 path — Score: 7 — ✅ RESOLVED (LOW, P2)
 
