@@ -41,8 +41,23 @@ export function createCalculatorServer(options: CalculatorServerOptions): Calcul
   return {
     server,
     listen: () =>
-      new Promise<void>((resolve) => {
-        server.listen(options.port, options.host, resolve);
+      new Promise<void>((resolve, reject) => {
+        // Resolve on a successful bind, reject on failure (e.g. EADDRINUSE).
+        // Both listeners are one-shot and each removes the other, so a failed
+        // bind rejects the promise instead of surfacing as an uncaught 'error'
+        // event, and neither listener leaks past startup.
+        const onError = (error: Error): void => {
+          server.removeListener('listening', onListening);
+          reject(error);
+        };
+        const onListening = (): void => {
+          server.removeListener('error', onError);
+          resolve();
+        };
+
+        server.once('error', onError);
+        server.once('listening', onListening);
+        server.listen(options.port, options.host);
       }),
     close: () =>
       new Promise<void>((resolve, reject) => {

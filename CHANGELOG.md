@@ -49,6 +49,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shape, before the body is read — for a missing or unsupported `Content-Type`. Documented in
   `src/openApiDocument.ts`; focused tests in `tests/api.spec.ts` cover plain JSON, JSON with charset,
   a missing type and `text/plain`. The existing `400`/`413`/`422` paths are untouched and stay green.
+- Made `CalculatorServer.listen()` reject a failed bind (CAL-20, Codex review v1 Risk 5): it
+  previously resolved unconditionally and left a bind failure (e.g. `EADDRINUSE`) to surface as an
+  uncaught `'error'` event. It now attaches one-shot `listening`/`error` listeners (each removing the
+  other), so a failed bind rejects the advertised promise and neither listener leaks past startup. A
+  lifecycle test (`tests/serverLifecycle.spec.ts`) binds an ephemeral port, attempts a colliding
+  second bind and asserts the controlled rejection with no leaked server.
 
 ## [0.2.0] — 2026-07-19
 
