@@ -7,17 +7,15 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 12 — opens the **fourth** review-derived cycle (Codex GPT-5 v1,
+**Version:** 13 — **closes** the **fourth** review-derived cycle (Codex GPT-5 v1,
 [`.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/`](../.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/),
-merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/22) as
-`5f27eca`). It records **CAL-15..20** (review Risks 1–5 + governance) as **Open** — so v11's "no
-outstanding items remain" no longer holds — and settles the two policy decisions the review raised
-(see "Decisions" below). Risk 6 (Info) is optional and not promoted. The full per-item acceptance
-lives in `WORKLIST_calculator-screenplay-bdd.md` (portfolio root); this file records the findings,
-severities, dependencies and status.
+merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/22)): CAL-15
+(governance) plus **CAL-16..20** (review Risks 1–5) are all Resolved 2026-07-27 and moved under
+**Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
+(see "Decisions" below). Risk 6 (Info) was not promoted.
 **Last Updated:** 2026-07-27
-**Based on:** `main` at `5f27eca` (merge of the Codex GPT-5 v1 review, PR #22), all three code
-reviews under `.review/`, P-04 licensing evidence, and
+**Based on:** `main` at `31f1b62`+ (CAL-16..19 merged via PRs #24–#27; CAL-20 on its own PR), all
+three code reviews under `.review/`, P-04 licensing evidence, and
 [`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
 
 **Decisions (owner-confirmed 2026-07-27, pre-loop — govern CAL-16/17):**
@@ -43,12 +41,24 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
+_No outstanding risks._ The fourth review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see
+**Resolved Risks** below.
+
+---
+
+### Resolved Risks
+
+Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### Fourth review-derived cycle (Codex GPT-5 v1, CAL-16..20) — ✅ Resolved 2026-07-27
+
 The **fourth code review** (Codex GPT-5 v1, 2026-07-23, merged via PR #22) raised five current-state
-findings absent from v11 plus one optional INFO item. They are triaged into
-`WORKLIST_calculator-screenplay-bdd.md` as CAL-15..20 and are being worked one item per
-`loop-worklist` iteration (a coupled loop — Calculator consumes `hand-baked-screenplay-pattern` via
-`file:../`, so each iteration rebuilds the sibling). Ordered highest priority first; CAL-15
-(governance, this record) and CAL-16/17 are the two MEDIUMs.
+findings absent from v11 (two MEDIUM, three LOW) plus one optional INFO item. Triaged into
+`WORKLIST_calculator-screenplay-bdd.md` as CAL-15..20 and delivered one item per `loop-worklist`
+iteration (a coupled loop — Calculator consumes `hand-baked-screenplay-pattern` via `file:../`, so
+each iteration rebuilt the sibling): CAL-15 governance (PR #23), then CAL-16..20 across PRs #24–#28.
+`npm run verify` was green after every item; the whole cycle is closed with **zero outstanding**.
+Risk 6 (INFO) was not promoted.
 
 #### Item CAL-16: Release metadata not single-sourced — Score: 12 — ✅ RESOLVED (MEDIUM, P1)
 
@@ -126,7 +136,7 @@ cases: charset → 200, missing `Content-Type` → 415, `text/plain` → 415 (pl
 The BDD/Screenplay path and object-body tests were verified to send `application/json` (Playwright
 auto-sets it for object bodies), so the guard is safe. Suite 24 → 27. CHANGELOG `[Unreleased]` note.
 
-#### Item CAL-20: `CalculatorServer.listen()` ignores bind failures — Score: 6 — 🔷 OPEN (LOW, P2)
+#### Item CAL-20: `CalculatorServer.listen()` ignores bind failures — Score: 6 — ✅ RESOLVED (LOW, P2)
 
 **Priority Score:** Security Impact (0) + Breakage Probability (4) + Maintenance Burden (2) = **6 points**
 **Finding (Codex Risk 5):** `listen()` resolves its promise without handling an `error` (e.g. a bind
@@ -135,18 +145,19 @@ failure), so a failed bind can surface as an uncaught process error.
 failure, remove temporary listeners on both paths; a lifecycle test binds one server then attempts a
 second bind to the same host/port and asserts a controlled rejection with no leak. **Run last.**
 **Code + tests + docs.**
+**Status:** ✅ RESOLVED 2026-07-27 (CAL-20). `listen()` (`src/calculatorHttpServer.ts`) now attaches
+one-shot `listening`/`error` handlers — each removing the other — so a failed bind (`EADDRINUSE`)
+rejects the advertised promise instead of surfacing as an uncaught event, and neither listener leaks
+past startup; successful startup/close behaviour is unchanged. `tests/serverLifecycle.spec.ts` binds
+an ephemeral port (0), attempts a colliding second bind and asserts the rejection with no leaked
+server. This item also carried the **cycle close-out**: the Risk Summary is reconciled to zero
+outstanding and CAL-16..20 relocated under Resolved Risks (above). Suite 40 → 42. CHANGELOG note.
 
 > **Not promoted:** Risk 6 (quantitative coverage/trend evidence) is INFO and explicitly optional;
 > OpenAPI example conformance is covered by CAL-16/19's focused contract checks; Docker Compose is
 > N/A; action-SHA pins, an extra Node LTS lane and provider release pinning stay optional/
 > trigger-bound. ADR 0001's floating sibling strategy is accepted until its external-consumer
 > trigger fires.
-
----
-
-### Resolved Risks
-
-Resolved risks are kept here as a record that the gap existed — do not delete them.
 
 #### 2026-07-19 review v2 close-out (TRIAGE-02..04) ✅ Resolved
 
@@ -324,19 +335,19 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 2 | — | CAL-16, CAL-17 — 🔶 OPEN (Codex review v1) |
-| LOW (0–9) | 3 | — | CAL-18, CAL-19, CAL-20 — 🔷 OPEN (Codex review v1) |
-| **Total Outstanding** | **5** | **—** | CAL-16..20; governance CAL-15 recorded by this backlog edit |
-| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) | ~3 hrs + 4 review cycles | |
+| MEDIUM (10–19) | 0 | — | — |
+| LOW (0–9) | 0 | — | — |
+| **Total Outstanding** | **0** | **—** | Fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
+| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-**Open — fourth review cycle (Codex GPT-5 v1):** CAL-16..20 (see "Outstanding Risks" above), being
-worked one item per `loop-worklist` iteration off this CAL-15 governance record. Everything earlier
-(CAL-01..14, the P-04/P-07 remediation, and code review v2 / TRIAGE-01..04) is delivered; see
-"Delivered" below.
+**None outstanding.** The fourth review-derived cycle (Codex GPT-5 v1, CAL-15..20) is fully
+delivered and recorded under **Resolved Risks**, alongside everything earlier (CAL-01..14, the
+P-04/P-07 remediation, and code review v2 / TRIAGE-01..04); see "Delivered" below. A fifth code
+review or a fresh survey would be the natural source of the next items.
 
 ### Delivered
 
