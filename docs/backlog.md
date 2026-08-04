@@ -46,7 +46,7 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-#### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — PLANNING (approved scope)
+#### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — IMPLEMENTED (awaiting merge + Pages deploy)
 
 **Priority Score:** Security Impact (1) + Breakage Probability (3) + Maintenance Burden (5) = **9 points**
 **Origin:** Portfolio landing **LAND-09C** (third public-evidence slice, READY once LAND-09B closed
@@ -85,20 +85,32 @@ API and must **not** call or claim to host `/health` or `/api/calculations`.
   deploys — deploy-only Pages permissions (`pages: write`/`id-token: write` on the deploy job only),
   nothing on pull requests. Playwright browsers are **not** needed for docs generation.
 
-**Acceptance criteria (for the implementation PR, not this planning PR):**
-- [ ] Pure `renderApiReference()` in `src/` + a deterministic emitter for `openapi.json`; a
+**Acceptance criteria:**
+- [x] Pure `renderApiReference()` in `src/` + a deterministic emitter for `openapi.json`; a
       verify-time check derives from `openApiDocument` and fails on any missing path/operation/response/
       schema, on `openapi.json` not deep-equalling the source, on non-determinism, on any external asset
-      ref, or on any `fetch`/call to the endpoints.
-- [ ] A generator script writes `openapi.json` + a self-contained `index.html` from built `dist/`.
-- [ ] `pages.yml` deploys on `push` to `main` after the build + docs check, with deploy-only Pages
-      permissions and no deployment on pull requests.
-- [ ] Repository Pages configured for GitHub Actions publication; the canonical public URL documented
-      in README with the "static reference, not a hosted API" wording.
+      ref, or on any `fetch`/call to the endpoints. **`src/apidocs/renderApiReference.ts` +
+      `src/apidocs/generateApiDocs.ts` (typed seam) + `scripts/check-api-docs.mjs`; the check is wired
+      into `npm run verify`. `check-api-docs: PASS` locally (deterministic, contract-faithful,
+      self-contained, 7640 bytes).**
+- [x] A generator script writes `openapi.json` + a self-contained `index.html` from built `dist/`.
+      **`scripts/generate-api-docs.mjs` (plain Node, no new dep) + `npm run docs:api`; wrote
+      `index.html` 7640 bytes + `openapi.json` 3896 bytes. `docs-site/` is gitignored (produced in CI).**
+- [x] `pages.yml` deploys on `push` to `main` after the build + docs check, with deploy-only Pages
+      permissions and no deployment on pull requests. **`.github/workflows/pages.yml`: reproduces the
+      ADR 0001 sibling layout, `build` runs `prepare:screenplay` + build + check + generate + upload;
+      `deploy` alone holds `pages: write`/`id-token: write`; `push`/`workflow_dispatch` only; no
+      Playwright browsers.**
+- [~] Repository Pages configured for GitHub Actions publication; the canonical public URL documented
+      in README with the "static reference, not a hosted API" wording. **README documents
+      <https://neocognitus70.github.io/calculator-screenplay-bdd/> with the static-reference wording;
+      repository Pages "GitHub Actions" source is enabled at merge/first deploy.**
 - [ ] The public URL returns HTTP 200, is self-contained and renders with no console errors at desktop
       and 390px; a separate landing PR then adds a new typed `documentation` action linking it.
+      **Pending merge + Pages deploy. Rendered locally: banner + all endpoints/schemas + illustrative
+      example, self-contained, no console errors.**
 
-**Type:** code + CI + docs. **This PR is docs-only (planning).**
+**Type:** code + CI + docs. **Implemented on branch `cal-21-impl-api-docs`.**
 
 ---
 
