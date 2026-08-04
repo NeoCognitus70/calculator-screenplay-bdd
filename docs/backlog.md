@@ -7,10 +7,15 @@
 
 # Calculator Screenplay BDD — Backlog
 
-**Version:** 14 — opens **CAL-21** (planning-only): publish a deterministic, self-contained static
+**Version:** 15 — **CAL-21 COMPLETE** (2026-08-04): the deterministic static API reference is live at
+<https://neocognitus70.github.io/calculator-screenplay-bdd/> (PRs #30 `faee931` + #31 `cd74df0`, Pages
+run 30884443647) and linked from the portfolio landing page via a new typed `documentation` action,
+closing landing **LAND-09C**. Back to **0 outstanding**; the fourth review-derived cycle below remains closed.
+
+**Version:** 14 — opened **CAL-21** (planning-only): publish a deterministic, self-contained static
 **API reference** rendered from `src/openApiDocument.ts` to GitHub Pages, to be linked from the
 portfolio landing page (via a new typed `documentation` action) as its public-evidence slice
-**LAND-09C**. This is the one currently-open item; the fourth review-derived cycle below remains closed.
+**LAND-09C**.
 
 **Version:** 13 — **closes** the **fourth** review-derived cycle (Codex GPT-5 v1,
 [`.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/`](../.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/),
@@ -46,7 +51,7 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-#### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — IMPLEMENTED (awaiting merge + Pages deploy)
+#### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — ✅ COMPLETE 2026-08-04
 
 **Priority Score:** Security Impact (1) + Breakage Probability (3) + Maintenance Burden (5) = **9 points**
 **Origin:** Portfolio landing **LAND-09C** (third public-evidence slice, READY once LAND-09B closed
@@ -101,16 +106,20 @@ API and must **not** call or claim to host `/health` or `/api/calculations`.
       ADR 0001 sibling layout, `build` runs `prepare:screenplay` + build + check + generate + upload;
       `deploy` alone holds `pages: write`/`id-token: write`; `push`/`workflow_dispatch` only; no
       Playwright browsers.**
-- [~] Repository Pages configured for GitHub Actions publication; the canonical public URL documented
-      in README with the "static reference, not a hosted API" wording. **README documents
-      <https://neocognitus70.github.io/calculator-screenplay-bdd/> with the static-reference wording;
-      repository Pages "GitHub Actions" source is enabled at merge/first deploy.**
-- [ ] The public URL returns HTTP 200, is self-contained and renders with no console errors at desktop
+- [x] Repository Pages configured for GitHub Actions publication; the canonical public URL documented
+      in README with the "static reference, not a hosted API" wording. **Pages enabled (source =
+      GitHub Actions); README documents <https://neocognitus70.github.io/calculator-screenplay-bdd/>
+      with the static-reference wording.**
+- [x] The public URL returns HTTP 200, is self-contained and renders with no console errors at desktop
       and 390px; a separate landing PR then adds a new typed `documentation` action linking it.
-      **Pending merge + Pages deploy. Rendered locally: banner + all endpoints/schemas + illustrative
-      example, self-contained, no console errors.**
+      **Verified 2026-08-04:** PRs #30 (`faee931`) + #31 (`cd74df0`) merged; Pages
+      [run 30884443647](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/30884443647)
+      green; the public URL and its `openapi.json` return HTTP 200, self-contained (banner + all
+      endpoints/schemas + illustrative example), no console errors. The landing "API reference"
+      `documentation` action was added and verified live via portfolio landing PR
+      [#25](https://github.com/GBrooks1970/portfolio/pull/25) (`a4f991c`), closing landing **LAND-09C**.
 
-**Type:** code + CI + docs. **Implemented on branch `cal-21-impl-api-docs`.**
+**Type:** code + CI + docs. **✅ COMPLETE 2026-08-04.**
 
 ---
 
@@ -409,8 +418,8 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
 | MEDIUM (10–19) | 0 | — | — |
-| LOW (0–9) | 1 | ~3–5 hrs | CAL-21 (static API-reference Pages publication) — PLANNING/approved |
-| **Total Outstanding** | **1** | **~3–5 hrs** | CAL-21 open (LAND-09C); fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
+| LOW (0–9) | 0 | — | — |
+| **Total Outstanding** | **0** | **—** | CAL-21 (LAND-09C) COMPLETE 2026-08-04; fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
