@@ -114,6 +114,20 @@ curl -X POST http://127.0.0.1:3100/api/calculations \
   -d "{\"leftOperand\":8,\"operator\":\"multiply\",\"rightOperand\":6}"
 ```
 
+## Live API reference
+
+A published, static rendering of the API contract is at
+**<https://neocognitus70.github.io/calculator-screenplay-bdd/>**.
+
+It is a **static reference generated from the committed contract** (`src/openApiDocument.ts`) — it is
+**not** a running service and does **not** call `/health` or `/api/calculations`. The raw document is
+exposed beside it as `openapi.json`. The page is self-contained (inline CSS only, no external assets
+or CDN) and is produced deterministically by `renderApiReference()` (`src/apidocs/`);
+`npm run docs:api` builds and writes `docs-site/`, and `npm run check:api-docs` fails if the reference
+drifts from the contract, is non-deterministic, or would load an external asset. The `Pages` workflow
+publishes it on pushes to `main` after the build and that check pass; the drift check also runs inside
+`npm run verify`.
+
 ## Test And Verify
 
 ```bash

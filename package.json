@@ -18,7 +18,9 @@
     "test": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --workers=1",
     "test:unit": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=unit-and-api --workers=1",
     "test:bdd": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=bdd --workers=1",
-    "verify": "node scripts/preflight-screenplay.mjs --built && npm run typecheck && npm run build && npm test"
+    "docs:api": "npm run build && node scripts/generate-api-docs.mjs",
+    "check:api-docs": "npm run build && node scripts/check-api-docs.mjs",
+    "verify": "node scripts/preflight-screenplay.mjs --built && npm run typecheck && npm run build && node scripts/check-api-docs.mjs && npm test"
   },
   "dependencies": {
     "hand-baked-screenplay-pattern": "file:../hand-baked-screenplay-pattern"

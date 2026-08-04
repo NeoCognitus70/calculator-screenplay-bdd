@@ -1,0 +1,88 @@
+name: Pages
+
+# Publishes the static API reference (CAL-21 / portfolio landing LAND-09C) to
+# GitHub Pages. Runs only on push to `main` (and manual dispatch), never on pull
+# requests, so no pull request can deploy. It reproduces the ADR 0001 sibling
+# layout to build, runs the drift/self-containment check, then generates and
+# deploys the reference. Playwright browsers are NOT needed for docs generation.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only by default. Only the deploy job is granted Pages write / id-token.
+permissions:
+  contents: read
+
+# Never cancel an in-flight deployment; let it finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  npm_config_cache: /home/runner/.npm
+
+jobs:
+  build:
+    name: Build API reference
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: calculator-screenplay-bdd
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v7
+        with:
+          path: calculator-screenplay-bdd
+          persist-credentials: false
+
+      - name: Check out the sibling Screenplay library (ADR 0001)
+        uses: actions/checkout@v7
+        with:
+          repository: NeoCognitus70/hand-baked-screenplay-pattern
+          ref: main
+          path: hand-baked-screenplay-pattern
+          persist-credentials: false
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: calculator-screenplay-bdd/package-lock.json
+
+      - name: Build the sibling Screenplay library
+        run: npm run prepare:screenplay
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Check the API reference (drift + self-containment)
+        run: node scripts/check-api-docs.mjs
+
+      - name: Generate the API reference
+        run: node scripts/generate-api-docs.mjs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: calculator-screenplay-bdd/docs-site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

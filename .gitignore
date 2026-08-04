@@ -12,3 +12,6 @@ coverage/
 *.log
 .env
 .DS_Store
+
+# Generated static API reference (CAL-21) — produced in CI for Pages, never committed
+docs-site/
