@@ -188,10 +188,15 @@ function renderIllustrativeExample(doc: OpenApiDocument): string {
 }
 
 const STYLE = `
-  :root { color-scheme: light dark; }
+  /* The reference is a light-themed document with hardcoded light surfaces
+     (code blocks, table headers). It pins the light colour scheme and sets an
+     explicit body text/background so that, under an OS dark preference, inherited
+     text does not default to white on those light surfaces (invisible). */
+  :root { color-scheme: light; }
   * { box-sizing: border-box; }
   body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-         margin: 0; padding: 1.5rem; line-height: 1.5; max-width: 960px; }
+         margin: 0; padding: 1.5rem; line-height: 1.5; max-width: 960px;
+         background: #ffffff; color: #1c2430; }
   h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
   h2 { font-size: 1.15rem; margin: 1.8rem 0 .6rem; }
   h3 { font-size: 1rem; margin: 1.1rem 0 .4rem; }
