@@ -7,6 +7,11 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 14 — opens **CAL-21** (planning-only): publish a deterministic, self-contained static
+**API reference** rendered from `src/openApiDocument.ts` to GitHub Pages, to be linked from the
+portfolio landing page (via a new typed `documentation` action) as its public-evidence slice
+**LAND-09C**. This is the one currently-open item; the fourth review-derived cycle below remains closed.
+
 **Version:** 13 — **closes** the **fourth** review-derived cycle (Codex GPT-5 v1,
 [`.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/`](../.review/CODE_REVIEW_CODEX_GPT_5_v1_20260723T2336Z/),
 merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/22)): CAL-15
@@ -41,7 +46,63 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-_No outstanding risks._ The fourth review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see
+#### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — PLANNING (approved scope)
+
+**Priority Score:** Security Impact (1) + Breakage Probability (3) + Maintenance Burden (5) = **9 points**
+**Origin:** Portfolio landing **LAND-09C** (third public-evidence slice, READY once LAND-09B closed
+2026-08-04). Per the LAND-09 cross-repository delivery contract, this landing item does **not** by
+itself authorise implementation here — this backlog entry is that authorisation. The landing
+repository owns only the eventual link (through a new typed `documentation` action); this repository
+owns the artefact, its generation, tests, workflow and Pages configuration.
+
+**Objective:** Publish a static, self-contained **API reference** rendered from the project's
+authoritative `src/openApiDocument.ts`, so a visitor can read the contract without cloning or
+running the server. It is **documentation for the contract** — it is **not** a hosted calculator
+API and must **not** call or claim to host `/health` or `/api/calculations`.
+
+**Approved scope / decisions (do not re-litigate):**
+- **Deterministic, dependency-free renderer, in `src/`.** A pure `renderApiReference(document): string`
+  turns the OpenAPI object into one self-contained HTML document (inline CSS/JS only). No third-party
+  renderer, **no unpinned CDN**, no new runtime dependency — consistent with the project's "tiny,
+  hand-written contract, no generator dependency" ethos (see `openApiDocument.ts`).
+- **Raw document exposed.** The generator also emits the raw `openapi.json` (a deterministic
+  serialisation of `openApiDocument`) beside the reference, and the reference links to it. Because the
+  server serves `openApiDocument` verbatim at `/openapi.json`, the emitted file **is** the served
+  contract.
+- **Drift-proof.** A verify-time check derives its expectations from `openApiDocument` and fails if
+  the reference omits any path, operation, response code or schema (with its properties/enums), if the
+  emitted `openapi.json` does not deep-equal the source, or if output is non-deterministic. Any change
+  to the contract therefore forces the reference to change too.
+- **Truthful framing.** The page states it is a **static reference generated from the committed
+  contract**, is not a running service, and does not call the endpoints. Any illustrative
+  request/response example is clearly labelled as illustrative and lives in the renderer, not in the
+  contract (so the CAL-16 version/drift policy and `openApiDocument` are untouched).
+- **Self-contained + no endpoint calls.** One HTML document, inline assets only, **no external
+  `http(s)://` / `src=` / `href=` asset refs**, and **no `fetch`/XHR** to `/health` or
+  `/api/calculations`. Checked automatically.
+- **Publish only after checks pass on `main`.** A `pages.yml` workflow runs on `push` to `main`,
+  reproduces the sibling-checkout layout (ADR 0001), builds, generates, runs the docs check, then
+  deploys — deploy-only Pages permissions (`pages: write`/`id-token: write` on the deploy job only),
+  nothing on pull requests. Playwright browsers are **not** needed for docs generation.
+
+**Acceptance criteria (for the implementation PR, not this planning PR):**
+- [ ] Pure `renderApiReference()` in `src/` + a deterministic emitter for `openapi.json`; a
+      verify-time check derives from `openApiDocument` and fails on any missing path/operation/response/
+      schema, on `openapi.json` not deep-equalling the source, on non-determinism, on any external asset
+      ref, or on any `fetch`/call to the endpoints.
+- [ ] A generator script writes `openapi.json` + a self-contained `index.html` from built `dist/`.
+- [ ] `pages.yml` deploys on `push` to `main` after the build + docs check, with deploy-only Pages
+      permissions and no deployment on pull requests.
+- [ ] Repository Pages configured for GitHub Actions publication; the canonical public URL documented
+      in README with the "static reference, not a hosted API" wording.
+- [ ] The public URL returns HTTP 200, is self-contained and renders with no console errors at desktop
+      and 390px; a separate landing PR then adds a new typed `documentation` action linking it.
+
+**Type:** code + CI + docs. **This PR is docs-only (planning).**
+
+---
+
+_No other outstanding risks._ The fourth review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see
 **Resolved Risks** below.
 
 ---
@@ -336,8 +397,8 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
 | MEDIUM (10–19) | 0 | — | — |
-| LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **0** | **—** | Fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
+| LOW (0–9) | 1 | ~3–5 hrs | CAL-21 (static API-reference Pages publication) — PLANNING/approved |
+| **Total Outstanding** | **1** | **~3–5 hrs** | CAL-21 open (LAND-09C); fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
