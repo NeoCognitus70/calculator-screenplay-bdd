@@ -1,5 +1,5 @@
 # CI gate: every PR and push to main must pass `npm run verify`
-# (provider-pin guard + typecheck + build + Playwright tests).
+# (provider-pin/boundary guards + named provider contract + remaining tests).
 #
 # Per ADR 0002, package-lock.json resolves the immutable public v0.3.0 provider
 # release artefact. A standalone Calculator checkout is therefore sufficient.
@@ -52,7 +52,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Verify (provider pin + typecheck + build + test)
+      - name: Verify (includes bounded provider contract exactly once)
         run: npm run verify
 
       - name: Upload Playwright evidence on failure

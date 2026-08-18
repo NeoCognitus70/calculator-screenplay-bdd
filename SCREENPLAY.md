@@ -124,6 +124,15 @@ compares only required semantics and human-readable observations—not native Ac
 timestamps, report bytes or feature sets. A deliberate final assertion failure proves original
 error propagation. This proof is REST-only; the browser and generated BDD suite remain hand-baked.
 
+Run the bounded proof directly with `npm run test:provider-contract`. Its executable source of
+scope is `providerContractProfile.ts`, which locks two provider IDs, two REST case IDs, expected
+request/result semantics and protected domain descriptions. `npm run verify` runs those 9 checks
+once, then the separately selected 42-test remainder.
+
+This is intentionally not a provider switch. There is no environment toggle or registry, native
+objects never cross provider boundaries, and no report/timestamp/screenshot parity is claimed.
+ADR 0003 records these limits and the trigger for any future widening.
+
 ## File Responsibilities
 
 - `tests/calculatorSteps.ts`: translates Gherkin phrases into Screenplay actions.
@@ -141,6 +150,8 @@ error propagation. This proof is REST-only; the browser and generated BDD suite 
   hand-baked runtime classes; translates Calculator contracts and native Stage events.
 - `tests/screenplay/promiseNativeScreenplayProvider.ts`: independent Calculator-owned Promise
   scheduler used only by the bounded provider proof.
+- `tests/screenplay/providerContractProfile.ts`: executable two-provider/two-case scope metadata and
+  protected Calculator descriptions.
 - `tests/calculatorProviderConformance.spec.ts`: dedicated import of the provider's exported
   conformance kit and translation to both Calculator adapters.
 - `tests/calculatorProviderContract.spec.ts`: shared dual-provider REST contract profile.

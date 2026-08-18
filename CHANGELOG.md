@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Added the permanent bounded provider-contract gate (CAL-25):
+  `npm run test:provider-contract` now isolates the 9 dual-provider checks in their own Playwright
+  project, while `npm test` runs the unchanged 42-test remainder. `npm run verify` and the required
+  Node 20 CI job execute both exactly once. Executable profile metadata locks two provider IDs, the
+  two approved REST case IDs, their semantics and protected domain descriptions; ADR 0003 records
+  the static gateway, evidence boundary, limitations and explicit non-goals.
 - Added the bounded alternate-provider REST proof (CAL-24). A deliberately small Calculator-owned
   Promise-native adapter now runs beside hand-baked only in dedicated provider tests, with no new
   runtime dependency and no change to the static browser/BDD default. Both adapters pass the four

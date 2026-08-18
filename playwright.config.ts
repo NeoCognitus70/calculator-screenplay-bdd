@@ -21,6 +21,8 @@ const bddTestDir = defineBddConfig({
   outputDir: 'features/.features-gen',
 });
 
+const providerContractSpecs = /calculatorProvider(?:Conformance|Contract)\.spec\.ts/;
+
 export default defineConfig({
   // Single shared webServer with no per-test data isolation: tests run serially
   // (every script also pins --workers=1). Flip to true only once each test owns
@@ -49,11 +51,19 @@ export default defineConfig({
       name: 'unit-and-api',
       testDir: 'tests',
       testMatch: /.*\.spec\.ts/,
+      testIgnore: providerContractSpecs,
       // No devices['Desktop Chrome'] profile here (deliberate): only
       // uiController.spec.ts uses the page fixture, and Playwright's default
       // browser settings are sufficient for its one network-abort scenario —
       // headless Chromium either way. Add the profile if a second
       // browser-backed spec needs a specific viewport/UA.
+    },
+    {
+      // CAL-25: a named, bounded profile. npm test excludes this project so
+      // npm run verify can run it once before the remaining full suite.
+      name: 'provider-contract',
+      testDir: 'tests',
+      testMatch: providerContractSpecs,
     },
     {
       name: 'bdd',

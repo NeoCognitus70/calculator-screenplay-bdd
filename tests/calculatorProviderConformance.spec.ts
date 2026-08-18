@@ -22,8 +22,7 @@ import {
   type CalculatorScenario,
   type CalculatorScreenplayProvider,
 } from './screenplay/calculatorScreenplay.js';
-import { HandBakedScreenplayProvider } from './screenplay/handBakedScreenplayProvider.js';
-import { PromiseNativeScreenplayProvider } from './screenplay/promiseNativeScreenplayProvider.js';
+import { providerContractProfile } from './screenplay/providerContractProfile.js';
 
 const ConformanceMemoryToken = calculatorAbilityToken<ConformanceMemory>('memory');
 
@@ -126,10 +125,9 @@ class CalculatorConformanceProvider implements ConformanceProvider {
   }
 }
 
-const providers = [
-  new CalculatorConformanceProvider(new HandBakedScreenplayProvider()),
-  new CalculatorConformanceProvider(new PromiseNativeScreenplayProvider()),
-];
+const providers = providerContractProfile.providers.map(
+  (entry) => new CalculatorConformanceProvider(entry.create()),
+);
 
 for (const provider of providers) {
   test.describe(`${provider.name} Calculator adapter conformance`, () => {
