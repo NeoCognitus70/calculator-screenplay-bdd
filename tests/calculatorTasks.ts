@@ -6,27 +6,28 @@
  * language. This is where BDD scenarios gain readable intent instead of
  * becoming procedural Playwright scripts.
  */
-import {
-  Ensure,
-  LastResponse,
-  Remember,
-  Send,
-  Task,
-  equals,
-} from 'hand-baked-screenplay-pattern';
 import type { CalculationRequest } from '../src/calculatorContracts.js';
 import {
   EnterTheCalculation,
   OpenTheCalculator,
   SubmitTheCalculation,
 } from './calculatorInteractions.js';
+import {
+  ensure,
+  equals,
+  lastResponseStatus,
+  remember,
+  send,
+  task,
+  type CalculatorActivity,
+} from './screenplay/calculatorScreenplay.js';
 
 export class Calculate {
-  static usingTheApi(request: CalculationRequest): Task {
-    return Task.where(
+  static usingTheApi(request: CalculationRequest): CalculatorActivity {
+    return task(
       '#actor calculates using the REST API',
-      Remember.that('lastCalculationRequest', request),
-      Send.a({
+      remember('lastCalculationRequest', request),
+      send({
         method: 'POST',
         url: '/api/calculations',
         body: request,
@@ -34,27 +35,27 @@ export class Calculate {
     );
   }
 
-  static usingTheBrowser(request: CalculationRequest): Task {
-    return Task.where(
+  static usingTheBrowser(request: CalculationRequest): CalculatorActivity {
+    return task(
       '#actor calculates using the browser interface',
-      Remember.that('lastCalculationRequest', request),
+      remember('lastCalculationRequest', request),
       OpenTheCalculator(),
       EnterTheCalculation(request),
       SubmitTheCalculation(),
     );
   }
 
-  static shouldHaveBeenAccepted(): Task {
-    return Task.where(
+  static shouldHaveBeenAccepted(): CalculatorActivity {
+    return task(
       '#actor confirms the calculation was accepted',
-      Ensure.that(LastResponse.status(), equals(200)),
+      ensure(lastResponseStatus(), equals(200)),
     );
   }
 
-  static shouldHaveBeenRejectedAsUnsupported(): Task {
-    return Task.where(
+  static shouldHaveBeenRejectedAsUnsupported(): CalculatorActivity {
+    return task(
       '#actor confirms the calculation was rejected as unsupported',
-      Ensure.that(LastResponse.status(), equals(422)),
+      ensure(lastResponseStatus(), equals(422)),
     );
   }
 }

@@ -17,7 +17,7 @@ const baseUrl = process.env.CALCULATOR_BASE_URL ?? `http://127.0.0.1:${port}`;
 
 const bddTestDir = defineBddConfig({
   features: 'features/**/*.feature',
-  steps: 'tests/calculatorSteps.ts',
+  steps: ['tests/calculatorFixtures.ts', 'tests/calculatorSteps.ts'],
   outputDir: 'features/.features-gen',
 });
 

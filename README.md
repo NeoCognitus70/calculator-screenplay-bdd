@@ -15,6 +15,8 @@ unit checks to Screenplay-backed Gherkin scenarios.
 - KISS/YAGNI: Node's built-in `http` module serves the API and static UI.
 - REST + OpenAPI: the API contract is available at `/openapi.json`.
 - Screenplay Pattern: actors use abilities, perform tasks, and ask questions.
+- Provider boundary: a Calculator-owned gateway composes one scenario-scoped provider/Actor; the
+  full suite statically selects the hand-baked v0.3.0 adapter.
 - ISTQB techniques where useful: equivalence partitioning, boundary values, decision-table thinking, and risk-based UI coverage.
 
 ## Project Layout
@@ -41,8 +43,10 @@ tests/
   api.spec.ts             REST integration tests.
   domain.spec.ts          Unit tests over the pure calculator domain.
   uiController.spec.ts    Browser-backed controller test (network-failure error state).
+  calculatorFixtures.ts   Scenario-scoped BDD provider lifecycle.
   calculator*.ts          Screenplay tasks, interactions, questions, and steps.
   screenplay*.ts          Playwright-to-Screenplay abilities/adapters.
+  screenplay/             Calculator seam, provider gateway, and hand-baked adapter.
 ```
 
 ## Prerequisites
@@ -133,6 +137,7 @@ publishes it on pushes to `main` after the build and that check pass; the drift 
 
 ```bash
 npm run check:screenplay-provider
+npm run check:screenplay-boundary
 npm run typecheck
 npm run build
 npm run test:unit

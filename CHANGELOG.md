@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Introduced one Calculator-owned Screenplay composition gateway (CAL-23). A scenario-scoped
+  Playwright fixture now owns provider lifecycle and Actor requests for both REST and browser
+  profiles; domain Tasks, Questions, interactions and adapters consume structural Calculator
+  contracts instead of importing native provider classes. The statically selected hand-baked v0.3.0
+  adapter is the sole direct provider import, maps typed abilities and lifecycle to its native Stage,
+  and rejects profile mixing. A deterministic boundary guard enforces those constraints without
+  changing the 42-test suite or Gherkin wording.
 - Pinned `hand-baked-screenplay-pattern` to its immutable v0.3.0 GitHub release artefact (CAL-22),
   replacing the moving sibling `file:../` dependency and both workflows' floating provider `main`
   checkout. A standalone Calculator checkout now installs with `npm ci`; ADR 0002 records the exact

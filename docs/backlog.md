@@ -7,6 +7,13 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 17 — **CAL-22 COMPLETE** (2026-08-18): the Calculator now consumes the immutable
+provider v0.3.0 release artefact from a standalone checkout. PR [#37](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/37)
+(`4d15bc2`, merge `6c86ffc`) superseded ADR 0001 with ADR 0002, removed both workflows' moving
+provider checkout and retired the sibling preflight/build path. The manifest/lock/decision guard,
+standalone `npm ci`, 42/42 suite and zero-vulnerability audit are green. **CAL-23 is now the only
+valid starting item; CAL-24..25 remain dependency-blocked.**
+
 **Version:** 16 — **Provider-switching Phase 2 PROMOTED** (2026-08-18): the owner authorised the
 Calculator proof described by the portfolio provider-switching viability assessment. Four required
 MEDIUM items, `CAL-22..25`, are Open and must execute in dependency order: immutable provider
@@ -31,7 +38,7 @@ merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pu
 **Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
 (see "Decisions" below). Risk 6 (Info) was not promoted.
 **Last Updated:** 2026-08-18
-**Based on:** `main` at `2b100908f6`, provider v0.3.0 at `58aa19261a`, the completed provider
+**Based on:** `main` at `6c86ffc2d1`, provider v0.3.0 at `58aa19261a`, the completed provider
 backlog `HBSP-28..33`, and the status-updated portfolio assessment
 [`hand-baked-screenplay-pattern-provider-switching-viability.md`](https://github.com/GBrooks1970/test-automation-portfolio/blob/main/project-specs/potential-project-outlines/hand-baked-screenplay-pattern-provider-switching-viability.md).
 
@@ -46,9 +53,9 @@ backlog `HBSP-28..33`, and the status-updated portfolio assessment
   assertions and required observable information. Byte-identical output and report feature parity
   are explicit non-goals.
 - The immutable v0.3.0 release artefact replaces the moving sibling `main` checkout as the CI proof
-  baseline. ADR 0001 must be amended or superseded: the 2026-08-18 owner promotion explicitly replaces
-  its earlier KISS/YAGNI deferral, and the provider now supplies the immutable release that decision
-  previously lacked.
+  baseline. CAL-22 superseded ADR 0001 with ADR 0002: the 2026-08-18 owner promotion explicitly
+  replaced its earlier KISS/YAGNI deferral, and the provider now supplies the immutable release that
+  decision previously lacked.
 - This promotion authorises only `CAL-22..25`. Mobile Forex, Juice Shop, ParaBank, BFX, Sudoku,
   Serenity adapters and later portfolio phases remain outside this backlog.
 
@@ -58,8 +65,9 @@ backlog `HBSP-28..33`, and the status-updated portfolio assessment
   that fails when package / lock-root / OpenAPI versions diverge under this policy.
 - **Blank operands are invalid input, never zero.** The browser UI rejects null/empty/whitespace
   operands before `Number(...)` conversion (CAL-17); numeric zero, negatives and decimals stay valid.
-- Preserved: the accepted ADR 0001 sibling-checkout strategy, the Node 20 required CI gate, and the
-  existing `400`/`413`/`422` response semantics.
+- Preserved at that time: the accepted ADR 0001 sibling-checkout strategy (since superseded by
+  ADR 0002 / CAL-22), the Node 20 required CI gate, and the existing `400`/`413`/`422` response
+  semantics.
 
 This backlog tracks outstanding work and risks for the calculator Screenplay/BDD demo project,
 ordered by priority score (highest first). It is the project's **source of truth** for item
@@ -77,10 +85,11 @@ status — session handovers narrate; this file records.
 
 ### Provider-switching Phase 2 (`CAL-22..25`) — PROMOTED 2026-08-18
 
-**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. The sequence is both
-dependency-driven and score-ordered: establish a reproducible provider baseline, create the consumer
-composition boundary, prove one bounded alternate implementation, then make the proof a permanent
-gate and close the phase. Each item must remain independently reviewable.
+**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. CAL-22 is complete; execute
+**CAL-23 next**. The sequence is both dependency-driven and score-ordered: establish a reproducible
+provider baseline, create the consumer composition boundary, prove one bounded alternate
+implementation, then make the proof a permanent gate and close the phase. Each item must remain
+independently reviewable.
 
 #### Item CAL-22: Pin the immutable provider artefact and supersede the moving-sibling proof — Score: 18
 
@@ -95,21 +104,24 @@ pinning the published v0.3.0 artefact instead of installing whatever happens to 
 provider worktree or on the provider's moving `main` branch.
 
 **Acceptance criteria:**
-- [ ] Amend or supersede ADR 0001. Record the exact v0.3.0 release URL, version and published SHA-256
+- [x] Amend or supersede ADR 0001. Record the exact v0.3.0 release URL, version and published SHA-256
       (`ac5bd1f6d9bddf95c9a42f99f05f093c7875b1835ecd3ae0d5ca2385e810c36d`), the owner decision
       that supersedes the earlier deferral, and the local-development policy after pinning.
-- [ ] `package.json` and `package-lock.json` resolve one immutable v0.3.0 artefact with lockfile
+- [x] `package.json` and `package-lock.json` resolve one immutable v0.3.0 artefact with lockfile
       integrity; no dependency or CI step follows a branch, mutable sibling worktree or floating URL.
-- [ ] A clean standalone Calculator checkout can run the documented install and `npm run verify`
+- [x] A clean standalone Calculator checkout can run the documented install and `npm run verify`
       path without cloning or building the provider repository. Retire or narrow
       `preflight:screenplay` / `prepare:screenplay` and update CI, README and contributor guidance to
       match the actual path.
-- [ ] The existing hand-baked browser, REST, BDD, API-doc and unit coverage remains green without
+- [x] The existing hand-baked browser, REST, BDD, API-doc and unit coverage remains green without
       domain or scenario wording changes; dependency/licence attribution remains correct.
-- [ ] Add a deterministic guard that fails if the manifest/lock/decision evidence drifts from the
+- [x] Add a deterministic guard that fails if the manifest/lock/decision evidence drifts from the
       approved provider version or immutable source. **Type:** dependency + CI + test + ADR/docs.
 
-**Status:** Open. **Depends on:** completed provider `HBSP-33` / v0.3.0 release.
+**Status:** ✅ COMPLETE 2026-08-18 — PR #37 (`4d15bc2`, merge `6c86ffc`); independently reproduced
+the published SHA-256, installed and verified from a provider-free standalone copy (42/42), and
+reviewed `npm audit` at zero vulnerabilities. **Depends on:** completed provider `HBSP-33` / v0.3.0
+release.
 
 #### Item CAL-23: Put provider selection and Actor construction behind one Calculator gateway — Score: 17
 
@@ -564,19 +576,19 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 4 | Phase 2 | CAL-22, CAL-23, CAL-24, CAL-25 — Open, dependency-ordered |
+| MEDIUM (10–19) | 3 | Phase 2 | CAL-23, CAL-24, CAL-25 — Open, dependency-ordered; CAL-22 complete |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **4** | **Phase 2** | Provider-switching proof promoted 2026-08-18; start with CAL-22 |
+| **Total Outstanding** | **3** | **Phase 2** | Provider-switching proof active; start with CAL-23 |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-**Current required sequence:** execute `CAL-22 → CAL-23 → CAL-24 → CAL-25`. A cold session should
-read the provider-switching decisions near the top of this file, the four Open items above,
-[`ADR 0001`](./adr/0001-consume-screenplay-library-via-sibling-checkout.md), and the portfolio
-viability assessment. CAL-22 is the only valid starting item; later items remain dependency-blocked.
+**Current required sequence:** CAL-22 is complete; execute `CAL-23 → CAL-24 → CAL-25`. A cold session
+should read the provider-switching decisions near the top of this file, the three Open items above,
+[`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md), and the portfolio
+viability assessment. CAL-23 is the only valid starting item; later items remain dependency-blocked.
 
 Phases 3–5 are not Calculator backlog work and remain unpromoted. A fifth code review or fresh survey
 must not displace the authorised Phase 2 sequence unless the owner explicitly reprioritises it.
