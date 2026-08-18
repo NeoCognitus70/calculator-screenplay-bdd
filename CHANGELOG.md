@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Pinned `hand-baked-screenplay-pattern` to its immutable v0.3.0 GitHub release artefact (CAL-22),
+  replacing the moving sibling `file:../` dependency and both workflows' floating provider `main`
+  checkout. A standalone Calculator checkout now installs with `npm ci`; ADR 0002 records the exact
+  release URL, published SHA-256 and local-development policy. The deterministic
+  `check:screenplay-provider` gate protects the manifest, lockfile, workflows, README and decision
+  evidence from drift, and the retired sibling preflight/build path has been removed.
+
 ### Fixed
 
 - Single-sourced the release version (CAL-16, Codex review v1 Risk 1): `package-lock.json`'s two

@@ -1,12 +1,8 @@
 # CI gate: every PR and push to main must pass `npm run verify`
-# (preflight + typecheck + build + Playwright tests).
+# (provider-pin guard + typecheck + build + Playwright tests).
 #
-# Per ADR 0001 (docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)
-# this project consumes the Screenplay library from a SIBLING checkout via a
-# `file:../` dependency, so the workflow reproduces the documented local layout:
-# both repositories checked out side by side inside the workspace.
-# `hand-baked-screenplay-pattern` is public, so the default GITHUB_TOKEN
-# suffices for the second checkout (user decision, 2026-06-12).
+# Per ADR 0002, package-lock.json resolves the immutable public v0.3.0 provider
+# release artefact. A standalone Calculator checkout is therefore sufficient.
 name: CI
 
 on:
@@ -43,14 +39,6 @@ jobs:
           path: calculator-screenplay-bdd
           persist-credentials: false
 
-      - name: Check out the sibling Screenplay library (ADR 0001)
-        uses: actions/checkout@v7
-        with:
-          repository: NeoCognitus70/hand-baked-screenplay-pattern
-          ref: main
-          path: hand-baked-screenplay-pattern
-          persist-credentials: false
-
       - name: Set up Node 20
         uses: actions/setup-node@v7
         with:
@@ -58,16 +46,13 @@ jobs:
           cache: npm
           cache-dependency-path: calculator-screenplay-bdd/package-lock.json
 
-      - name: Build the sibling Screenplay library
-        run: npm run prepare:screenplay
-
       - name: Install dependencies
         run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Verify (preflight + typecheck + build + test)
+      - name: Verify (provider pin + typecheck + build + test)
         run: npm run verify
 
       - name: Upload Playwright evidence on failure

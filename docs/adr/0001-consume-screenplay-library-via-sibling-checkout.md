@@ -1,6 +1,7 @@
 # ADR 0001 — Consume the Screenplay library via a sibling checkout
 
-**Status:** Accepted (user-confirmed 2026-06-12)
+**Status:** Superseded by [ADR 0002](./0002-consume-screenplay-provider-via-pinned-release.md)
+on 2026-08-18 (owner-authorised CAL-22)
 **Date:** 2026-06-12
 **Relates to:** `docs/backlog.md` Risk #1 — hard dependency on a sibling checkout of
 `hand-baked-screenplay-pattern`
@@ -69,3 +70,8 @@ preflight's clone remedy in favour of the pinned reference.
   this co-developed teaching pair: the calculator *should* break loudly when a sibling change
   breaks it, and there are still no external consumers to protect (KISS/YAGNI). The pin-to-tag
   remedy remains gated on this ADR's external-consumers revisit trigger above.
+- **2026-08-18 (provider-switching Phase 2 / CAL-22):** the owner promoted the Calculator
+  portability proof after the provider published its immutable v0.3.0 distribution. The release
+  satisfies the reproducibility trigger that this ADR previously deferred, so ADR 0002 replaces the
+  sibling checkout with the pinned release artefact. This record remains unchanged as the history of
+  the original decision.

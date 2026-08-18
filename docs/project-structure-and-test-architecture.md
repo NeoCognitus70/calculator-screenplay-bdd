@@ -17,7 +17,7 @@ src/         The system under test (SUT): pure domain, HTTP server, UI controlle
 features/    Gherkin .feature files — the business-readable BDD examples.
 tests/       Two distinct kinds of test code (see below).
 docs/        This note, the Screenplay flow guide, ADRs, and the backlog.
-scripts/     The sibling-checkout preflight (preflight-screenplay.mjs).
+scripts/     Deterministic provider/API-document generation and drift checks.
 ```
 
 ### `src/` — the system under test
@@ -117,6 +117,6 @@ uiController.spec.ts  integration  browser-backed controller error handling
                                     automated through the Screenplay layer
 ```
 
-`npm run verify` runs the sibling preflight, the typecheck, the build, and then
-the full test suite (`bddgen` + all Playwright projects), which is the same
-sequence CI runs on every pull request.
+`npm run verify` checks the immutable Screenplay-provider pin, runs the typecheck and build, checks
+the API reference, and then runs the full test suite (`bddgen` + all Playwright projects). CI runs
+the same sequence on every pull request from a standalone Calculator checkout.
