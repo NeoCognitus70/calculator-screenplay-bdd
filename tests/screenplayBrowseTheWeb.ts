@@ -7,14 +7,13 @@
  * state or raw fixtures.
  */
 import type { Page } from '@playwright/test';
-import { Ability } from 'hand-baked-screenplay-pattern';
+import { calculatorAbilityToken } from './screenplay/calculatorScreenplay.js';
 
-export class BrowseTheWeb extends Ability {
-  static using(page: Page): BrowseTheWeb {
-    return new BrowseTheWeb(page);
-  }
-
-  protected constructor(readonly page: Page) {
-    super();
-  }
+export interface BrowseTheWebAbility {
+  readonly page: Page;
 }
+
+export const BrowseTheWeb = {
+  token: calculatorAbilityToken<BrowseTheWebAbility>('browse the Calculator web interface'),
+  using: (page: Page): BrowseTheWebAbility => ({ page }),
+} as const;

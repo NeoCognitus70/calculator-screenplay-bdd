@@ -24,10 +24,12 @@ BDD readability.
 
 ```text
 Gherkin scenario
-  -> calculatorSteps.ts
-    -> Actor on a Stage
+  -> calculatorFixtures.ts (one scenario lifecycle)
+    -> screenplayProviderGateway.ts (static hand-baked selection)
+      -> handBakedScreenplayProvider.ts (native Stage/Actor adapter)
+        -> calculatorSteps.ts (requests one REST or browser Actor)
       -> Calculate task
-        -> API: Send.a(...) through MakeRequests
+        -> API: send(...) through the Calculator HTTP ability
         -> UI: OpenTheCalculator + EnterTheCalculation + SubmitTheCalculation
       -> Ensure.that(...)
         -> TheApiCalculation or TheDisplayedCalculation question
@@ -35,14 +37,15 @@ Gherkin scenario
 
 ## Abilities
 
-`PlaywrightApiClient` adapts Playwright's `APIRequestContext` to the
-Screenplay library's `HttpClient` interface. That lets actors use the built-in
-`MakeRequests`, `Send`, and `LastResponse` primitives against the real API.
+`PlaywrightApiClient` adapts Playwright's `APIRequestContext` to Calculator's provider-neutral HTTP
+contract. Calculator-owned request, response and memory abilities are bound by the gateway for each
+Actor. The hand-baked adapter maps their typed tokens to native ability tokens; domain Tasks and
+Questions never import a concrete provider.
 
 `BrowseTheWeb` wraps Playwright's `Page`. Browser-specific mechanics stay in
 interactions and questions instead of leaking into feature steps.
 
-Both API and UI actors also receive `ManageData`. The tasks remember the last
+Both API and UI actors also receive isolated Calculator scenario memory. The tasks remember the last
 calculation request, and the "should be" Then steps recall it through
 `TheRememberedCalculation` (`calculatorQuestions.ts`) — passing it through the
 same pure `calculate()` the server/UI use and asserting the result matches the
@@ -96,11 +99,23 @@ Broader arithmetic coverage remains in `tests/domain.spec.ts` and
 `tests/api.spec.ts`. This is risk-based testing: use lower-cost layers for broad
 coverage, and reserve browser BDD scenarios for product workflows.
 
+The `calculatorScenario` Playwright fixture creates exactly one provider lifecycle per generated
+scenario. The first When step requests either the `rest` or `browser` profile from that scenario;
+the gateway locks the lifecycle to that profile so native objects cannot be mixed. Provider choice
+is a static composition decision — there is no environment or scenario-level hot switch.
+
 ## File Responsibilities
 
 - `tests/calculatorSteps.ts`: translates Gherkin phrases into Screenplay actions.
+- `tests/calculatorFixtures.ts`: owns scenario creation and completion for the BDD runner.
 - `tests/calculatorTasks.ts`: captures calculator business activities.
 - `tests/calculatorInteractions.ts`: performs browser mechanics.
 - `tests/calculatorQuestions.ts`: reads API and UI outcomes.
 - `tests/screenplayApiClient.ts`: adapts Playwright API requests to Screenplay HTTP.
 - `tests/screenplayBrowseTheWeb.ts`: grants actors the ability to use a browser page.
+- `tests/screenplay/calculatorScreenplay.ts`: defines Calculator-owned portable Actor, Activity,
+  Question, ability, REST, memory, expectation, and lifecycle contracts.
+- `tests/screenplay/screenplayProviderGateway.ts`: statically selects the provider and binds the REST
+  and browser profiles.
+- `tests/screenplay/handBakedScreenplayProvider.ts`: the only test module importing
+  `hand-baked-screenplay-pattern`; translates Calculator contracts to its native Stage and Actor.

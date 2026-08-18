@@ -7,7 +7,11 @@
  * for fake transports in its own examples.
  */
 import type { APIRequestContext, APIResponse } from '@playwright/test';
-import type { HttpClient, HttpRequest, HttpResponse } from 'hand-baked-screenplay-pattern';
+import type {
+  CalculatorHttpClient,
+  CalculatorHttpRequest,
+  CalculatorHttpResponse,
+} from './screenplay/calculatorScreenplay.js';
 
 interface PlaywrightRequestOptions {
   readonly method: string;
@@ -15,10 +19,10 @@ interface PlaywrightRequestOptions {
   readonly data?: unknown;
 }
 
-export class PlaywrightApiClient implements HttpClient {
+export class PlaywrightApiClient implements CalculatorHttpClient {
   constructor(private readonly requestContext: APIRequestContext) {}
 
-  async send(request: HttpRequest): Promise<HttpResponse> {
+  async send(request: CalculatorHttpRequest): Promise<CalculatorHttpResponse> {
     const options: PlaywrightRequestOptions = {
       method: request.method,
       ...(request.headers ? { headers: { ...request.headers } } : {}),

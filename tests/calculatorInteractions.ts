@@ -6,18 +6,18 @@
  * that know Playwright locator mechanics. Higher-level tasks can stay focused
  * on business intent.
  */
-import { Interaction } from 'hand-baked-screenplay-pattern';
 import type { CalculationRequest } from '../src/calculatorContracts.js';
 import { BrowseTheWeb } from './screenplayBrowseTheWeb.js';
+import { interaction } from './screenplay/calculatorScreenplay.js';
 
 export const OpenTheCalculator = () =>
-  Interaction.where('#actor opens the calculator', async (actor) => {
-    await actor.abilityTo(BrowseTheWeb).page.goto('/');
+  interaction('#actor opens the calculator', async (actor) => {
+    await actor.abilityTo(BrowseTheWeb.token).page.goto('/');
   });
 
 export const EnterTheCalculation = (request: CalculationRequest) =>
-  Interaction.where('#actor enters a calculation', async (actor) => {
-    const page = actor.abilityTo(BrowseTheWeb).page;
+  interaction('#actor enters a calculation', async (actor) => {
+    const page = actor.abilityTo(BrowseTheWeb.token).page;
 
     await page.getByLabel('Left operand').fill(String(request.leftOperand));
     await page.getByLabel('Operator').selectOption(request.operator);
@@ -25,6 +25,9 @@ export const EnterTheCalculation = (request: CalculationRequest) =>
   });
 
 export const SubmitTheCalculation = () =>
-  Interaction.where('#actor submits the calculation', async (actor) => {
-    await actor.abilityTo(BrowseTheWeb).page.getByRole('button', { name: 'Calculate' }).click();
+  interaction('#actor submits the calculation', async (actor) => {
+    await actor
+      .abilityTo(BrowseTheWeb.token)
+      .page.getByRole('button', { name: 'Calculate' })
+      .click();
   });

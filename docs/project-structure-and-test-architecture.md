@@ -57,8 +57,10 @@ project split (below) is what keeps them separate:
    step bindings), plus the tasks/interactions/questions
    (`calculatorTasks.ts`, `calculatorInteractions.ts`, `calculatorQuestions.ts`)
    and the Playwright-to-Screenplay adapters (`screenplayApiClient.ts`,
-   `screenplayBrowseTheWeb.ts`). These are imported by the generated BDD specs;
-   they are not `*.spec.ts` files and so are never picked up directly as tests.
+   `screenplayBrowseTheWeb.ts`). `calculatorFixtures.ts` owns one provider lifecycle per BDD
+   scenario, while `tests/screenplay/` contains the Calculator-owned contracts, static composition
+   gateway and hand-baked adapter. These are imported by the generated BDD specs; they are not
+   `*.spec.ts` files and so are never picked up directly as tests.
 
 ## The two Playwright projects
 
@@ -91,8 +93,9 @@ The `bdd` project does not point at the `features/` folder directly. Instead,
 `playwright.config.ts` calls `defineBddConfig({ ... })`, which wires up:
 
 - `features: 'features/**/*.feature'` — the Gherkin source.
-- `steps: 'tests/calculatorSteps.ts'` — the step definitions that bind each
-  Gherkin sentence to Screenplay actors, tasks, and questions.
+- `steps: ['tests/calculatorFixtures.ts', 'tests/calculatorSteps.ts']` — the custom scenario fixture
+  plus the step definitions that bind each Gherkin sentence to Screenplay actors, tasks, and
+  questions.
 - `outputDir: 'features/.features-gen'` — where generated specs are written.
 
 `defineBddConfig(...)` returns that output directory, and the `bdd` project uses
@@ -117,6 +120,7 @@ uiController.spec.ts  integration  browser-backed controller error handling
                                     automated through the Screenplay layer
 ```
 
-`npm run verify` checks the immutable Screenplay-provider pin, runs the typecheck and build, checks
-the API reference, and then runs the full test suite (`bddgen` + all Playwright projects). CI runs
-the same sequence on every pull request from a standalone Calculator checkout.
+`npm run verify` checks the immutable Screenplay-provider pin and the single composition boundary,
+runs the typecheck and build, checks the API reference, and then runs the full test suite (`bddgen` +
+all Playwright projects). CI runs the same sequence on every pull request from a standalone
+Calculator checkout.

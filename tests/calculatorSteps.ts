@@ -6,44 +6,39 @@
  * translation and actor setup. Assertions and system operations stay in
  * Screenplay tasks and questions.
  */
-import type { Actor } from 'hand-baked-screenplay-pattern';
-import {
-  Cast,
-  Ensure,
-  MakeRequests,
-  ManageData,
-  Stage,
-  equals,
-  includes,
-} from 'hand-baked-screenplay-pattern';
-import { createBdd, test } from 'playwright-bdd';
+import { createBdd } from 'playwright-bdd';
 import type { CalculationRequest, CalculatorOperator } from '../src/calculatorContracts.js';
+import { test } from './calculatorFixtures.js';
 import { Calculate } from './calculatorTasks.js';
 import {
   TheApiCalculation,
   TheDisplayedCalculation,
   TheRememberedCalculation,
 } from './calculatorQuestions.js';
-import { PlaywrightApiClient } from './screenplayApiClient.js';
-import { BrowseTheWeb } from './screenplayBrowseTheWeb.js';
+import {
+  ensure,
+  equals,
+  includes,
+  type CalculatorActor,
+} from './screenplay/calculatorScreenplay.js';
 
 const { When, Then } = createBdd(test);
 
 interface CalculatorScenarioWorld {
-  actor?: Actor;
+  actor?: CalculatorActor;
 }
 
 When(
   /^(.+) calculates (-?\d+(?:\.\d+)?) (plus|minus|times|divided by) (-?\d+(?:\.\d+)?) using the REST API$/,
   async function (
     this: CalculatorScenarioWorld,
-    { request },
+    { calculatorScenario },
     actorName: string,
     leftOperand: string,
     operatorPhrase: string,
     rightOperand: string,
   ) {
-    const actor = actorWhoCanUseTheApi(actorName, new PlaywrightApiClient(request));
+    const actor = calculatorScenario.actor(actorName, 'rest');
     this.actor = actor;
 
     await actor.attemptsTo(
@@ -59,11 +54,11 @@ Then(
   async function (this: CalculatorScenarioWorld, {}, expectedResult: string) {
     await actorFrom(this).attemptsTo(
       Calculate.shouldHaveBeenAccepted(),
-      Ensure.that(TheApiCalculation.result(), equals(Number(expectedResult))),
+      ensure(TheApiCalculation.result(), equals(Number(expectedResult))),
       // CAL-12: recall the request Calculate.usingTheApi remembered and prove
       // it explains the observed result (closes the Remember loop; see
       // TheRememberedCalculation in calculatorQuestions.ts).
-      Ensure.that(TheRememberedCalculation.result(), equals(Number(expectedResult))),
+      ensure(TheRememberedCalculation.result(), equals(Number(expectedResult))),
     );
   },
 );
@@ -73,7 +68,7 @@ Then(
   async function (this: CalculatorScenarioWorld, {}, expectedMessage: string) {
     await actorFrom(this).attemptsTo(
       Calculate.shouldHaveBeenRejectedAsUnsupported(),
-      Ensure.that(TheApiCalculation.errorDetails(), includes(expectedMessage)),
+      ensure(TheApiCalculation.errorDetails(), includes(expectedMessage)),
     );
   },
 );
@@ -82,13 +77,13 @@ When(
   /^(.+) calculates (-?\d+(?:\.\d+)?) (plus|minus|times|divided by) (-?\d+(?:\.\d+)?) using the browser interface$/,
   async function (
     this: CalculatorScenarioWorld,
-    { page },
+    { calculatorScenario },
     actorName: string,
     leftOperand: string,
     operatorPhrase: string,
     rightOperand: string,
   ) {
-    const actor = actorWhoCanUseTheBrowser(actorName, page);
+    const actor = calculatorScenario.actor(actorName, 'browser');
     this.actor = actor;
 
     await actor.attemptsTo(
@@ -103,11 +98,11 @@ Then(
   /^the displayed result should be "([^"]+)"$/,
   async function (this: CalculatorScenarioWorld, {}, expectedMessage: string) {
     await actorFrom(this).attemptsTo(
-      Ensure.that(TheDisplayedCalculation.message(), equals(expectedMessage)),
+      ensure(TheDisplayedCalculation.message(), equals(expectedMessage)),
       // CAL-12: recall the request Calculate.usingTheBrowser remembered and
       // prove it explains the displayed expression (closes the Remember
       // loop; see TheRememberedCalculation in calculatorQuestions.ts).
-      Ensure.that(TheRememberedCalculation.expression(), equals(expectedMessage)),
+      ensure(TheRememberedCalculation.expression(), equals(expectedMessage)),
     );
   },
 );
@@ -116,26 +111,10 @@ Then(
   /^the displayed error should include "([^"]+)"$/,
   async function (this: CalculatorScenarioWorld, {}, expectedMessage: string) {
     await actorFrom(this).attemptsTo(
-      Ensure.that(TheDisplayedCalculation.message(), includes(expectedMessage)),
+      ensure(TheDisplayedCalculation.message(), includes(expectedMessage)),
     );
   },
 );
-
-function actorWhoCanUseTheApi(actorName: string, client: PlaywrightApiClient): Actor {
-  const stage = new Stage(
-    Cast.whereEveryoneCan(MakeRequests.using(client), ManageData.usingAnEmptyStore()),
-  );
-
-  return stage.actor(actorName);
-}
-
-function actorWhoCanUseTheBrowser(actorName: string, page: Parameters<typeof BrowseTheWeb.using>[0]): Actor {
-  const stage = new Stage(
-    Cast.whereEveryoneCan(BrowseTheWeb.using(page), ManageData.usingAnEmptyStore()),
-  );
-
-  return stage.actor(actorName);
-}
 
 function calculationRequest(
   leftOperand: number,
@@ -164,7 +143,7 @@ function operatorFromPhrase(operatorPhrase: string): CalculatorOperator {
   }
 }
 
-function actorFrom(world: CalculatorScenarioWorld): Actor {
+function actorFrom(world: CalculatorScenarioWorld): CalculatorActor {
   if (!world.actor) {
     throw new Error('No actor has performed a calculator action yet.');
   }

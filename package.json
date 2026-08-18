@@ -10,6 +10,7 @@
   },
   "scripts": {
     "check:screenplay-provider": "node scripts/check-screenplay-provider.mjs",
+    "check:screenplay-boundary": "node scripts/check-screenplay-boundary.mjs",
     "dev": "npm run build && node --max-old-space-size=4096 dist/startServer.js",
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
@@ -19,7 +20,7 @@
     "test:bdd": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=bdd --workers=1",
     "docs:api": "npm run build && node scripts/generate-api-docs.mjs",
     "check:api-docs": "npm run build && node scripts/check-api-docs.mjs",
-    "verify": "npm run check:screenplay-provider && npm run typecheck && npm run build && node scripts/check-api-docs.mjs && npm test"
+    "verify": "npm run check:screenplay-provider && npm run check:screenplay-boundary && npm run typecheck && npm run build && node scripts/check-api-docs.mjs && npm test"
   },
   "dependencies": {
     "hand-baked-screenplay-pattern": "https://github.com/NeoCognitus70/hand-baked-screenplay-pattern/releases/download/v0.3.0/hand-baked-screenplay-pattern-0.3.0.tgz"
