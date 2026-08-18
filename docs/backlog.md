@@ -7,6 +7,13 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 16 — **Provider-switching Phase 2 PROMOTED** (2026-08-18): the owner authorised the
+Calculator proof described by the portfolio provider-switching viability assessment. Four required
+MEDIUM items, `CAL-22..25`, are Open and must execute in dependency order: immutable provider
+artefact → Calculator gateway → bounded alternate-provider REST proof → CI/evidence close-out. The
+full suite remains hand-baked by default; runtime hot-switching, report parity, later consumer
+migrations and framework replacement are outside this promotion.
+
 **Version:** 15 — **CAL-21 COMPLETE** (2026-08-04): the deterministic static API reference is live at
 <https://neocognitus70.github.io/calculator-screenplay-bdd/> (PRs #30 `faee931` + #31 `cd74df0`, Pages
 run 30884443647) and linked from the portfolio landing page via a new typed `documentation` action,
@@ -23,10 +30,27 @@ merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pu
 (governance) plus **CAL-16..20** (review Risks 1–5) are all Resolved 2026-07-27 and moved under
 **Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
 (see "Decisions" below). Risk 6 (Info) was not promoted.
-**Last Updated:** 2026-07-27
-**Based on:** `main` at `31f1b62`+ (CAL-16..19 merged via PRs #24–#27; CAL-20 on its own PR), all
-three code reviews under `.review/`, P-04 licensing evidence, and
-[`docs/audits/2026-07-14_public-readiness.md`](./audits/2026-07-14_public-readiness.md).
+**Last Updated:** 2026-08-18
+**Based on:** `main` at `2b100908f6`, provider v0.3.0 at `58aa19261a`, the completed provider
+backlog `HBSP-28..33`, and the status-updated portfolio assessment
+[`hand-baked-screenplay-pattern-provider-switching-viability.md`](https://github.com/GBrooks1970/test-automation-portfolio/blob/main/project-specs/potential-project-outlines/hand-baked-screenplay-pattern-provider-switching-viability.md).
+
+**Provider-switching Phase 2 decisions (owner-authorised 2026-08-18):**
+- Provider selection is static at the build/profile composition boundary; no scenario-level or
+  environment-variable runtime provider switch is introduced.
+- The complete browser, REST and BDD suite continues to use hand-baked v0.3.0 by default. Only a
+  representative REST contract profile runs against the alternate provider.
+- One provider owns each Actor, every Activity and the lifecycle for a profile. Native objects from
+  different providers are never mixed.
+- The alternate profile must preserve domain wording, order, failure propagation, Questions,
+  assertions and required observable information. Byte-identical output and report feature parity
+  are explicit non-goals.
+- The immutable v0.3.0 release artefact replaces the moving sibling `main` checkout as the CI proof
+  baseline. ADR 0001 must be amended or superseded: the 2026-08-18 owner promotion explicitly replaces
+  its earlier KISS/YAGNI deferral, and the provider now supplies the immutable release that decision
+  previously lacked.
+- This promotion authorises only `CAL-22..25`. Mobile Forex, Juice Shop, ParaBank, BFX, Sudoku,
+  Serenity adapters and later portfolio phases remain outside this backlog.
 
 **Decisions (owner-confirmed 2026-07-27, pre-loop — govern CAL-16/17):**
 - **API version tracks the package release.** OpenAPI `info.version` follows `package.json` (0.2.0);
@@ -50,6 +74,129 @@ status — session handovers narrate; this file records.
 ---
 
 ## Outstanding Risks
+
+### Provider-switching Phase 2 (`CAL-22..25`) — PROMOTED 2026-08-18
+
+**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. The sequence is both
+dependency-driven and score-ordered: establish a reproducible provider baseline, create the consumer
+composition boundary, prove one bounded alternate implementation, then make the proof a permanent
+gate and close the phase. Each item must remain independently reviewable.
+
+#### Item CAL-22: Pin the immutable provider artefact and supersede the moving-sibling proof — Score: 18
+
+**Priority Score:** Security Impact (4) + Breakage Probability (8) + Maintenance Burden (6) =
+**18 points (MEDIUM)**
+
+**Origin:** Provider-switching viability assessment Phase 2 plus the Phase 1 packaging acceptance
+criterion; owner promoted Phase 2 on 2026-08-18.
+
+**Objective:** make Calculator's default hand-baked execution reproducible from its own checkout by
+pinning the published v0.3.0 artefact instead of installing whatever happens to be in a sibling
+provider worktree or on the provider's moving `main` branch.
+
+**Acceptance criteria:**
+- [ ] Amend or supersede ADR 0001. Record the exact v0.3.0 release URL, version and published SHA-256
+      (`ac5bd1f6d9bddf95c9a42f99f05f093c7875b1835ecd3ae0d5ca2385e810c36d`), the owner decision
+      that supersedes the earlier deferral, and the local-development policy after pinning.
+- [ ] `package.json` and `package-lock.json` resolve one immutable v0.3.0 artefact with lockfile
+      integrity; no dependency or CI step follows a branch, mutable sibling worktree or floating URL.
+- [ ] A clean standalone Calculator checkout can run the documented install and `npm run verify`
+      path without cloning or building the provider repository. Retire or narrow
+      `preflight:screenplay` / `prepare:screenplay` and update CI, README and contributor guidance to
+      match the actual path.
+- [ ] The existing hand-baked browser, REST, BDD, API-doc and unit coverage remains green without
+      domain or scenario wording changes; dependency/licence attribution remains correct.
+- [ ] Add a deterministic guard that fails if the manifest/lock/decision evidence drifts from the
+      approved provider version or immutable source. **Type:** dependency + CI + test + ADR/docs.
+
+**Status:** Open. **Depends on:** completed provider `HBSP-33` / v0.3.0 release.
+
+#### Item CAL-23: Put provider selection and Actor construction behind one Calculator gateway — Score: 17
+
+**Priority Score:** Security Impact (2) + Breakage Probability (8) + Maintenance Burden (7) =
+**17 points (MEDIUM)**
+
+**Origin:** Provider-switching viability assessment Phase 2 step 1.
+
+**Objective:** create one Calculator-owned composition boundary so domain-facing Tasks, Questions,
+steps and adapters do not select or construct a concrete provider throughout the suite.
+
+**Acceptance criteria:**
+- [ ] One clearly named Calculator gateway/composition module owns provider selection, Actor creation,
+      Ability binding and per-scenario lifecycle creation for both REST and browser profiles.
+- [ ] Direct imports from `hand-baked-screenplay-pattern` are confined to the hand-baked adapter,
+      the gateway's public type seam and dedicated provider/conformance tests. Domain Tasks,
+      Questions and step definitions consume the Calculator-owned seam rather than selecting a
+      provider themselves.
+- [ ] Actor construction is removed from `calculatorSteps.ts`; runner hooks/world setup request one
+      scenario-scoped provider/Actor through the gateway, with exactly one lifecycle owner.
+- [ ] The full existing suite continues to run through the hand-baked adapter by default with
+      unchanged Gherkin, Task/Question descriptions, assertions, test counts and Playwright evidence.
+- [ ] Provider choice is a build/test-profile composition decision, not a per-scenario environment
+      toggle. No alternate provider is added in this item. **Type:** architecture refactor + tests + docs.
+
+**Status:** Open. **Depends on:** CAL-22.
+
+#### Item CAL-24: Prove the REST contract slice through an independent alternate provider — Score: 16
+
+**Priority Score:** Security Impact (2) + Breakage Probability (7) + Maintenance Burden (7) =
+**16 points (MEDIUM)**
+
+**Origin:** Provider-switching viability assessment Phase 2 steps 2–4.
+
+**Objective:** run a small but representative Calculator REST slice through the hand-baked adapter and
+one independent Promise-native alternate provider without changing the slice's domain vocabulary or
+assertion intent.
+
+**Acceptance criteria:**
+- [ ] Add a Calculator-owned alternate provider adapter that does not reuse hand-baked native
+      `Actor`, `Task`, `Question`, `Stage` or reporter classes at runtime. Keep it deliberately small;
+      do not add Serenity/JS, Cypress, Cucumber or Playwright as provider-runtime dependencies.
+- [ ] Run the exported provider conformance cases against both Calculator adapters, truthfully
+      translating their native lifecycle observations. Both prove ability/memory isolation,
+      sync/async Questions, ordered execution, stop-on-failure, description preservation and
+      exactly-once lifecycle outcomes.
+- [ ] Define one bounded REST contract profile containing at least a successful calculation and a
+      rejected/failed calculation path. Execute the same Calculator-owned domain Tasks, Questions and
+      assertions through both providers; do not duplicate or provider-prefix the domain wording.
+- [ ] Prove equivalent required observations: request/result semantics, ordering, original failure,
+      assertion outcome and human-readable descriptions. Do not compare internal Actor objects,
+      timestamps, byte output or report feature sets.
+- [ ] Keep the full browser/BDD suite on hand-baked only. The alternate profile cannot become the
+      default or widen beyond the recorded REST slice in this item. **Type:** code + contract tests + docs.
+
+**Status:** Open. **Depends on:** CAL-23.
+
+#### Item CAL-25: Gate and publish the bounded provider-switching proof — Score: 14
+
+**Priority Score:** Security Impact (2) + Breakage Probability (6) + Maintenance Burden (6) =
+**14 points (MEDIUM)**
+
+**Origin:** Provider-switching viability assessment Phase 2 acceptance and evidence close-out.
+
+**Objective:** make the Phase 2 proof reproducible in the normal project gate, document exactly what
+was and was not proved, and close the phase only after main-branch CI evidence exists.
+
+**Acceptance criteria:**
+- [ ] Add a named provider-contract command/profile that runs both conformance adapters and the
+      dual-provider REST slice; wire it into `npm run verify` and the required Node 20 CI job without
+      duplicating the full Playwright/BDD suite.
+- [ ] Guard the hand-baked full-suite default and the bounded alternate profile against silent scope
+      drift: provider count, selected REST cases and unchanged domain descriptions are asserted from
+      executable metadata rather than copied prose.
+- [ ] Update README, `SCREENPLAY.md`, architecture documentation, ADR index/decision, CHANGELOG and
+      this backlog with the pinned artefact, gateway, profile command, evidence, limitations and the
+      explicit non-goals (runtime hot-switching, mixed native objects and report parity).
+- [ ] `npm run verify` passes from a clean standalone checkout; `npm audit` is reviewed; the provider
+      and Calculator worktrees remain clean; required CI on the implementation head is green and linked
+      from the completion record.
+- [ ] Only after CAL-22..25 are all complete, move them to Resolved Risks, reconcile the Risk Summary
+      to zero, and record the Phase 2 completion date. Do not promote Phases 3–5 from this item.
+      **Type:** test/CI + docs + close-out.
+
+**Status:** Open. **Depends on:** CAL-24.
+
+---
 
 #### Item CAL-21: Publish a static API reference (from `openApiDocument.ts`) to GitHub Pages — Score: 9 — ✅ COMPLETE 2026-08-04
 
@@ -123,8 +270,8 @@ API and must **not** call or claim to host `/health` or `/api/calculations`.
 
 ---
 
-_No other outstanding risks._ The fourth review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see
-**Resolved Risks** below.
+_No other outstanding risks._ `CAL-22..25` are the only current open items. The fourth
+review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see **Resolved Risks** below.
 
 ---
 
@@ -417,19 +564,22 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 0 | — | — |
+| MEDIUM (10–19) | 4 | Phase 2 | CAL-22, CAL-23, CAL-24, CAL-25 — Open, dependency-ordered |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **0** | **—** | CAL-21 (LAND-09C) COMPLETE 2026-08-04; fourth review-derived cycle (CAL-15..20) closed 2026-07-27 |
+| **Total Outstanding** | **4** | **Phase 2** | Provider-switching proof promoted 2026-08-18; start with CAL-22 |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-**None outstanding.** The fourth review-derived cycle (Codex GPT-5 v1, CAL-15..20) is fully
-delivered and recorded under **Resolved Risks**, alongside everything earlier (CAL-01..14, the
-P-04/P-07 remediation, and code review v2 / TRIAGE-01..04); see "Delivered" below. A fifth code
-review or a fresh survey would be the natural source of the next items.
+**Current required sequence:** execute `CAL-22 → CAL-23 → CAL-24 → CAL-25`. A cold session should
+read the provider-switching decisions near the top of this file, the four Open items above,
+[`ADR 0001`](./adr/0001-consume-screenplay-library-via-sibling-checkout.md), and the portfolio
+viability assessment. CAL-22 is the only valid starting item; later items remain dependency-blocked.
+
+Phases 3–5 are not Calculator backlog work and remain unpromoted. A fifth code review or fresh survey
+must not displace the authorised Phase 2 sequence unless the owner explicitly reprioritises it.
 
 ### Delivered
 
