@@ -20,8 +20,11 @@ const providerImports = typescriptFiles
 
 check(
   JSON.stringify(providerImports) ===
-    JSON.stringify(['tests/screenplay/handBakedScreenplayProvider.ts']),
-  `direct provider imports must be confined to the hand-baked adapter; found: ${providerImports.join(', ') || 'none'}`,
+    JSON.stringify([
+      'tests/calculatorProviderConformance.spec.ts',
+      'tests/screenplay/handBakedScreenplayProvider.ts',
+    ]),
+  `direct provider imports must be confined to the hand-baked adapter and exported-kit conformance spec; found: ${providerImports.join(', ') || 'none'}`,
 );
 
 const steps = readFileSync(resolve(testsRoot, 'calculatorSteps.ts'), 'utf8');
@@ -43,6 +46,30 @@ check(
   'the gateway must statically select the hand-baked provider',
 );
 check(!gateway.includes('process.env'), 'provider choice must not be an environment runtime toggle');
+check(
+  !gateway.includes('PromiseNativeScreenplayProvider'),
+  'the alternate provider must not enter the default BDD/browser gateway',
+);
+
+const alternate = readFileSync(
+  resolve(testsRoot, 'screenplay/promiseNativeScreenplayProvider.ts'),
+  'utf8',
+);
+check(
+  !alternate.includes('hand-baked-screenplay-pattern') &&
+    !alternate.includes('@playwright/test'),
+  'the Promise-native provider must not reuse hand-baked or Playwright runtime classes',
+);
+
+const restProof = readFileSync(
+  resolve(testsRoot, 'calculatorProviderContract.spec.ts'),
+  'utf8',
+);
+check(
+  restProof.includes("scenario.actor('Avery', 'rest')") &&
+    !restProof.includes('BrowseTheWeb'),
+  'the alternate-provider proof must remain confined to the REST profile',
+);
 
 const fixtures = readFileSync(resolve(testsRoot, 'calculatorFixtures.ts'), 'utf8');
 check(

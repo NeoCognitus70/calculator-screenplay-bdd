@@ -16,18 +16,18 @@ import {
   lastResponseBody,
   question,
   recall,
-  type CalculatorAnswerable,
+  type CalculatorQuestion,
 } from './screenplay/calculatorScreenplay.js';
 
 export class TheApiCalculation {
-  static result(): CalculatorAnswerable<number> {
+  static result(): CalculatorQuestion<number> {
     return question('the API calculation result', async (actor) => {
       const body = await actor.answer(lastResponseBody<CalculationSuccessResponse>());
       return body.result;
     });
   }
 
-  static errorDetails(): CalculatorAnswerable<readonly string[]> {
+  static errorDetails(): CalculatorQuestion<readonly string[]> {
     return question('the API calculation error details', async (actor) => {
       const body = await actor.answer(lastResponseBody<ApiErrorResponse>());
       return body.details;
@@ -36,7 +36,7 @@ export class TheApiCalculation {
 }
 
 export class TheDisplayedCalculation {
-  static message(): CalculatorAnswerable<string> {
+  static message(): CalculatorQuestion<string> {
     return question('the displayed calculation message', async (actor) => {
       // The controller renders asynchronously after the fetch settles, marking
       // the outcome via data-state. Wait explicitly for a settled render before
@@ -63,7 +63,7 @@ export class TheRememberedCalculation {
   // production server/UI use, so a scenario can prove the remembered request
   // actually explains the observed outcome instead of Remember being a
   // documented-but-unused side effect.
-  static result(): CalculatorAnswerable<number> {
+  static result(): CalculatorQuestion<number> {
     return question(
       'the result derived from the remembered calculation request',
       async (actor) => {
@@ -73,7 +73,7 @@ export class TheRememberedCalculation {
     );
   }
 
-  static expression(): CalculatorAnswerable<string> {
+  static expression(): CalculatorQuestion<string> {
     return question(
       'the expression derived from the remembered calculation request',
       async (actor) => {

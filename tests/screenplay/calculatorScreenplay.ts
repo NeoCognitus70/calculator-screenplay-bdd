@@ -42,14 +42,56 @@ export interface CalculatorActor {
 
 export type CalculatorProviderProfile = 'rest' | 'browser';
 
+/** Opaque provider-owned data retained alongside portable lifecycle events. */
+export interface CalculatorExecutionExtension {
+  readonly provider: string;
+  readonly outcome?: unknown;
+  readonly metadata?: unknown;
+}
+
 export type CalculatorSceneOutcome =
   | { readonly status: 'success' }
   | { readonly status: 'failure'; readonly error: Error };
 
+/** Required observations shared by Calculator provider adapters. */
+export type CalculatorLifecycleEvent =
+  | {
+      readonly type: 'activity:starts' | 'activity:finishes';
+      readonly actor: string;
+      readonly description: string;
+    }
+  | {
+      readonly type: 'activity:fails';
+      readonly actor: string;
+      readonly description: string;
+      readonly error: Error;
+    }
+  | {
+      readonly type: 'scene:starts';
+      readonly description: string;
+      readonly extension?: CalculatorExecutionExtension;
+    }
+  | {
+      readonly type: 'scene:finishes';
+      readonly description: string;
+      readonly outcome: CalculatorSceneOutcome;
+      readonly extension?: CalculatorExecutionExtension;
+    };
+
+export interface CalculatorScenarioOptions {
+  /** Automatic is used by Calculator BDD; manual lets the conformance kit drive lifecycle. */
+  readonly lifecycle?: 'automatic' | 'manual';
+}
+
 export interface CalculatorScenario {
   readonly providerName: string;
   actor(name: string, profile: CalculatorProviderProfile): CalculatorActor;
-  finish(outcome: CalculatorSceneOutcome): void;
+  start(extension?: CalculatorExecutionExtension): void;
+  finish(
+    outcome: CalculatorSceneOutcome,
+    extension?: CalculatorExecutionExtension,
+  ): void;
+  events(): readonly CalculatorLifecycleEvent[];
 }
 
 export type CalculatorProfileAbilities = Readonly<
@@ -61,6 +103,7 @@ export interface CalculatorScreenplayProvider {
   createScenario(
     description: string,
     abilities: CalculatorProfileAbilities,
+    options?: CalculatorScenarioOptions,
   ): CalculatorScenario;
 }
 
