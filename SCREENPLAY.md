@@ -1,8 +1,9 @@
 # Screenplay Architecture
 
-This project consumes the immutable v0.3.0 release of the
-`hand-baked-screenplay-pattern` package. It does not copy the Screenplay primitives into this
-repository or depend on a provider worktree.
+The full Calculator BDD suite consumes the immutable v0.3.0 release of the
+`hand-baked-screenplay-pattern` package. A bounded REST-only proof also exercises a deliberately
+small Calculator-owned Promise-native provider. It does not copy the hand-baked primitives into
+this repository or depend on a provider worktree.
 
 The goal is pedagogical: show how a small dependency-free Screenplay
 implementation can structure Playwright API and browser tests while preserving
@@ -18,7 +19,7 @@ BDD readability.
 | Interaction | A low-level operation, such as filling fields or clicking Calculate. |
 | Question | A typed observation, such as the API result or displayed browser message. |
 | Ensure | An assertion interaction that checks a question against an expectation. |
-| Cast / Stage | The setup that gives actors their abilities for each scenario. |
+| Provider lifecycle | The selected adapter gives actors abilities and owns each scenario outcome. |
 
 ## How The Pieces Fit
 
@@ -33,14 +34,18 @@ Gherkin scenario
         -> UI: OpenTheCalculator + EnterTheCalculation + SubmitTheCalculation
       -> Ensure.that(...)
         -> TheApiCalculation or TheDisplayedCalculation question
+
+Dedicated CAL-24 proof (ordinary Playwright specs)
+  -> exported provider conformance cases -> hand-baked adapter + Promise-native adapter
+  -> one shared Calculator REST profile  -> hand-baked adapter + Promise-native adapter
 ```
 
 ## Abilities
 
 `PlaywrightApiClient` adapts Playwright's `APIRequestContext` to Calculator's provider-neutral HTTP
-contract. Calculator-owned request, response and memory abilities are bound by the gateway for each
-Actor. The hand-baked adapter maps their typed tokens to native ability tokens; domain Tasks and
-Questions never import a concrete provider.
+contract. Calculator-owned request, response and memory abilities are bound for each Actor. The
+hand-baked adapter maps typed tokens to native ability tokens; the Promise-native adapter maintains
+an independent per-Actor ability map. Domain Tasks and Questions never import a concrete provider.
 
 `BrowseTheWeb` wraps Playwright's `Page`. Browser-specific mechanics stay in
 interactions and questions instead of leaking into feature steps.
@@ -56,7 +61,7 @@ global state.
 ## Tasks
 
 `Calculate.usingTheApi(request)` expresses the intent to calculate through the
-REST boundary. It composes `Remember.that(...)` and `Send.a(...)`.
+REST boundary. It composes Calculator-owned `remember(...)` and `send(...)` activities.
 
 `Calculate.usingTheBrowser(request)` expresses the intent to calculate through
 the user interface. It composes opening the calculator, entering the operands,
@@ -85,7 +90,7 @@ Questions describe observations:
 - `TheApiCalculation.errorDetails()`
 - `TheDisplayedCalculation.message()`
 
-BDD assertions use `Ensure.that(question, expectation)` so the step definitions
+BDD assertions use `ensure(question, expectation)` so the step definitions
 stay focused on scenario language.
 
 ## BDD Layer
@@ -104,6 +109,21 @@ scenario. The first When step requests either the `rest` or `browser` profile fr
 the gateway locks the lifecycle to that profile so native objects cannot be mixed. Provider choice
 is a static composition decision — there is no environment or scenario-level hot switch.
 
+## Bounded Provider Proof
+
+`calculatorProviderConformance.spec.ts` registers all four exported v0.3.0 conformance cases
+against the real Calculator adapters. The hand-baked adapter translates its native `Stage` events;
+the independent adapter translates events from its own Promise scheduler. The shared observations
+cover ability and memory isolation, synchronous/asynchronous Questions, ordered and stop-on-failure
+execution, preserved descriptions and errors, and exactly-once lifecycle outcomes.
+
+`calculatorProviderContract.spec.ts` then sends one accepted multiplication and one rejected
+division-by-zero request through the same `Calculate`, `TheApiCalculation`,
+`TheRememberedCalculation`, `ensure`, `equals` and `includes` vocabulary for both providers. It
+compares only required semantics and human-readable observations—not native Actor objects,
+timestamps, report bytes or feature sets. A deliberate final assertion failure proves original
+error propagation. This proof is REST-only; the browser and generated BDD suite remain hand-baked.
+
 ## File Responsibilities
 
 - `tests/calculatorSteps.ts`: translates Gherkin phrases into Screenplay actions.
@@ -118,4 +138,9 @@ is a static composition decision — there is no environment or scenario-level h
 - `tests/screenplay/screenplayProviderGateway.ts`: statically selects the provider and binds the REST
   and browser profiles.
 - `tests/screenplay/handBakedScreenplayProvider.ts`: the only test module importing
-  `hand-baked-screenplay-pattern`; translates Calculator contracts to its native Stage and Actor.
+  hand-baked runtime classes; translates Calculator contracts and native Stage events.
+- `tests/screenplay/promiseNativeScreenplayProvider.ts`: independent Calculator-owned Promise
+  scheduler used only by the bounded provider proof.
+- `tests/calculatorProviderConformance.spec.ts`: dedicated import of the provider's exported
+  conformance kit and translation to both Calculator adapters.
+- `tests/calculatorProviderContract.spec.ts`: shared dual-provider REST contract profile.

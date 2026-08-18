@@ -17,6 +17,8 @@ unit checks to Screenplay-backed Gherkin scenarios.
 - Screenplay Pattern: actors use abilities, perform tasks, and ask questions.
 - Provider boundary: a Calculator-owned gateway composes one scenario-scoped provider/Actor; the
   full suite statically selects the hand-baked v0.3.0 adapter.
+- Bounded portability proof: dedicated REST/conformance specs also exercise a small independent
+  Promise-native adapter without changing the browser/BDD provider or adding a runtime dependency.
 - ISTQB techniques where useful: equivalence partitioning, boundary values, decision-table thinking, and risk-based UI coverage.
 
 ## Project Layout
@@ -45,8 +47,9 @@ tests/
   uiController.spec.ts    Browser-backed controller test (network-failure error state).
   calculatorFixtures.ts   Scenario-scoped BDD provider lifecycle.
   calculator*.ts          Screenplay tasks, interactions, questions, and steps.
+  calculatorProvider*.spec.ts  Dual-provider conformance and bounded REST proof.
   screenplay*.ts          Playwright-to-Screenplay abilities/adapters.
-  screenplay/             Calculator seam, provider gateway, and hand-baked adapter.
+  screenplay/             Calculator seam, provider gateway, and two provider adapters.
 ```
 
 ## Prerequisites
@@ -148,6 +151,11 @@ npm run verify
 `npm run test:bdd` generates Playwright tests from the Gherkin files under
 `features/.features-gen/`. Generated files are ignored because the source of
 truth is the feature text plus the step definitions.
+
+`tests/calculatorProviderConformance.spec.ts` registers the provider package's exported semantic
+cases against both Calculator adapters. `tests/calculatorProviderContract.spec.ts` runs one bounded
+REST profile through both adapters and compares required observations. These are ordinary
+`unit-and-api` specs; the alternate provider is never selected by the BDD fixture or browser lane.
 
 Playwright is configured with `screenshot: 'on'`, so browser-backed tests record
 screenshots even when they pass. That is intentional for this small pedagogical

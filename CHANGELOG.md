@@ -21,13 +21,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Added the bounded alternate-provider REST proof (CAL-24). A deliberately small Calculator-owned
+  Promise-native adapter now runs beside hand-baked only in dedicated provider tests, with no new
+  runtime dependency and no change to the static browser/BDD default. Both adapters pass the four
+  exported v0.3.0 conformance cases, and the same Calculator REST Tasks, Questions and assertions
+  prove equivalent accepted, rejected and deliberate assertion-failure observations. Native
+  lifecycle events are truthfully translated at each adapter boundary, preserving order,
+  descriptions, original errors and exactly-once outcomes. Nine focused provider checks grow the
+  suite from 42 to 51 tests.
 - Introduced one Calculator-owned Screenplay composition gateway (CAL-23). A scenario-scoped
   Playwright fixture now owns provider lifecycle and Actor requests for both REST and browser
   profiles; domain Tasks, Questions, interactions and adapters consume structural Calculator
   contracts instead of importing native provider classes. The statically selected hand-baked v0.3.0
-  adapter is the sole direct provider import, maps typed abilities and lifecycle to its native Stage,
+  adapter is the sole runtime adapter import, maps typed abilities and lifecycle to its native Stage,
   and rejects profile mixing. A deterministic boundary guard enforces those constraints without
-  changing the 42-test suite or Gherkin wording.
+  changing the then-42-test suite or Gherkin wording.
 - Pinned `hand-baked-screenplay-pattern` to its immutable v0.3.0 GitHub release artefact (CAL-22),
   replacing the moving sibling `file:../` dependency and both workflows' floating provider `main`
   checkout. A standalone Calculator checkout now installs with `npm ci`; ADR 0002 records the exact

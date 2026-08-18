@@ -6,16 +6,20 @@ import {
   Outcome,
   Stage,
   type Actor as HandBakedActor,
+  type DomainEvent,
 } from 'hand-baked-screenplay-pattern';
 import type {
   CalculatorAbilityToken,
   CalculatorActivity,
   CalculatorActor,
   CalculatorAnswerable,
+  CalculatorExecutionExtension,
+  CalculatorLifecycleEvent,
   CalculatorProfileAbilities,
   CalculatorProviderProfile,
   CalculatorQuestion,
   CalculatorScenario,
+  CalculatorScenarioOptions,
   CalculatorSceneOutcome,
   CalculatorScreenplayProvider,
 } from './calculatorScreenplay.js';
@@ -64,14 +68,17 @@ class HandBakedScenarioAdapter implements CalculatorScenario {
     HandBakedAbilityToken<object>
   >();
   private readonly actors = new Map<string, HandBakedActorAdapter>();
+  private readonly nativeEvents: DomainEvent[] = [];
   private profile: CalculatorProviderProfile | undefined;
   private stage: Stage | undefined;
+  private started = false;
   private finished = false;
 
   constructor(
     providerName: string,
     private readonly description: string,
     private readonly abilities: CalculatorProfileAbilities,
+    private readonly lifecycle: 'automatic' | 'manual',
   ) {
     this.providerName = providerName;
   }
@@ -89,7 +96,8 @@ class HandBakedScenarioAdapter implements CalculatorScenario {
     if (!this.stage) {
       this.profile = profile;
       this.stage = this.createStage(profile);
-      this.stage.sceneStarts(this.description);
+      this.stage.assign({ notifyOf: (event) => this.nativeEvents.push(event) });
+      if (this.lifecycle === 'automatic') this.start();
     }
 
     let actor = this.actors.get(name);
@@ -104,13 +112,36 @@ class HandBakedScenarioAdapter implements CalculatorScenario {
     return actor;
   }
 
-  finish(outcome: CalculatorSceneOutcome): void {
+  start(extension?: CalculatorExecutionExtension): void {
+    if (this.started) return;
+    if (!this.stage) {
+      throw new Error(
+        `Calculator scenario '${this.description}' needs an actor profile before it can start.`,
+      );
+    }
+    this.started = true;
+    this.stage.sceneStarts(this.description, extension);
+  }
+
+  finish(
+    outcome: CalculatorSceneOutcome,
+    extension?: CalculatorExecutionExtension,
+  ): void {
     if (this.finished || !this.stage) return;
+    if (!this.started) this.start();
     this.finished = true;
     this.stage.sceneFinishes(
       this.description,
       outcome.status === 'success' ? Outcome.successful() : Outcome.from(outcome.error),
+      extension,
     );
+  }
+
+  events(): readonly CalculatorLifecycleEvent[] {
+    return this.nativeEvents.flatMap((event) => {
+      const mapped = calculatorEventFrom(event);
+      return mapped ? [mapped] : [];
+    });
   }
 
   private createStage(profile: CalculatorProviderProfile): Stage {
@@ -141,8 +172,57 @@ export class HandBakedScreenplayProvider implements CalculatorScreenplayProvider
   createScenario(
     description: string,
     abilities: CalculatorProfileAbilities,
+    options: CalculatorScenarioOptions = {},
   ): CalculatorScenario {
-    return new HandBakedScenarioAdapter(this.name, description, abilities);
+    return new HandBakedScenarioAdapter(
+      this.name,
+      description,
+      abilities,
+      options.lifecycle ?? 'automatic',
+    );
+  }
+}
+
+function calculatorEventFrom(event: DomainEvent): CalculatorLifecycleEvent | undefined {
+  switch (event.type) {
+    case 'activity:starts':
+    case 'activity:finishes':
+      return {
+        type: event.type,
+        actor: event.actor,
+        description: event.activity,
+      };
+    case 'activity:fails':
+      return {
+        type: event.type,
+        actor: event.actor,
+        description: event.activity,
+        error: event.error,
+      };
+    case 'scene:starts':
+      return event.extension
+        ? {
+            type: event.type,
+            description: event.name,
+            extension: event.extension,
+          }
+        : { type: event.type, description: event.name };
+    case 'scene:finishes': {
+      const outcome: CalculatorSceneOutcome =
+        event.outcome.status === 'success'
+          ? { status: 'success' }
+          : { status: 'failure', error: event.outcome.error };
+      return event.extension
+        ? {
+            type: event.type,
+            description: event.name,
+            outcome,
+            extension: event.extension,
+          }
+        : { type: event.type, description: event.name, outcome };
+    }
+    case 'test-run:finishes':
+      return undefined;
   }
 }
 

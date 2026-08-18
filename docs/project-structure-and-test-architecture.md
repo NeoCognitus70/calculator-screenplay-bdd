@@ -47,8 +47,9 @@ The `tests/` directory holds **two distinct things**, and the Playwright
 project split (below) is what keeps them separate:
 
 1. **Plain Playwright spec files** (`*.spec.ts`) — `api.spec.ts` (REST
-   integration), `domain.spec.ts` (unit tests over the pure domain), and
-   `uiController.spec.ts` (a browser-backed test that loads the UI, aborts the
+   integration), `domain.spec.ts` (unit tests over the pure domain), the bounded
+   `calculatorProviderConformance.spec.ts` / `calculatorProviderContract.spec.ts` portability proof,
+   and `uiController.spec.ts` (a browser-backed test that loads the UI, aborts the
    `/api/calculations` route, and asserts the controller settles to an error
    state). These are ordinary Playwright tests, not Gherkin-driven — but
    `uiController.spec.ts` uses the `page` fixture like the `bdd` project's
@@ -59,7 +60,8 @@ project split (below) is what keeps them separate:
    and the Playwright-to-Screenplay adapters (`screenplayApiClient.ts`,
    `screenplayBrowseTheWeb.ts`). `calculatorFixtures.ts` owns one provider lifecycle per BDD
    scenario, while `tests/screenplay/` contains the Calculator-owned contracts, static composition
-   gateway and hand-baked adapter. These are imported by the generated BDD specs; they are not
+   gateway, hand-baked adapter and independent Promise-native proof adapter. These are imported by
+   specs or the generated BDD layer; they are not
    `*.spec.ts` files and so are never picked up directly as tests.
 
 ## The two Playwright projects
@@ -69,7 +71,7 @@ kinds of `tests/` code stay apart:
 
 | Project | `testDir` | What it runs |
 |---|---|---|
-| `unit-and-api` | `tests` | The plain spec files, matched by `testMatch: /.*\.spec\.ts/` — i.e. `tests/api.spec.ts`, `tests/domain.spec.ts`, and `tests/uiController.spec.ts`. The last of these is browser-backed (it uses the `page` fixture), so despite its name this project is not purely non-browser. |
+| `unit-and-api` | `tests` | The plain spec files, matched by `testMatch: /.*\.spec\.ts/` — unit, REST integration, bounded provider-conformance/contract, server lifecycle and controller specs. `uiController.spec.ts` is browser-backed, so despite its name this project is not purely non-browser. |
 | `bdd` | the `playwright-bdd` output dir | The Playwright specs **generated** from the Gherkin features, run under `devices['Desktop Chrome']`. |
 
 Because `unit-and-api` matches only `*.spec.ts`, the Screenplay glue files in
@@ -114,13 +116,14 @@ or a step.
 ```text
 domain.spec.ts        unit         fast checks on the pure calculator rules
 api.spec.ts           integration  the REST boundary directly
+calculatorProvider*  contract     bounded conformance + dual-provider REST proof
 uiController.spec.ts  integration  browser-backed controller error handling
                                     (network-failure state, no Gherkin)
 *.feature (via bdd)   acceptance   business-readable API + UI examples,
                                     automated through the Screenplay layer
 ```
 
-`npm run verify` checks the immutable Screenplay-provider pin and the single composition boundary,
-runs the typecheck and build, checks the API reference, and then runs the full test suite (`bddgen` +
-all Playwright projects). CI runs the same sequence on every pull request from a standalone
-Calculator checkout.
+`npm run verify` checks the immutable Screenplay-provider pin and the guarded composition boundary
+(including the REST-only alternate-provider scope), runs the typecheck and build, checks the API
+reference, and then runs the full test suite (`bddgen` + all Playwright projects). CI runs the same
+sequence on every pull request from a standalone Calculator checkout.
