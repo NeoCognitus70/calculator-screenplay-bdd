@@ -2,9 +2,9 @@ name: Pages
 
 # Publishes the static API reference (CAL-21 / portfolio landing LAND-09C) to
 # GitHub Pages. Runs only on push to `main` (and manual dispatch), never on pull
-# requests, so no pull request can deploy. It reproduces the ADR 0001 sibling
-# layout to build, runs the drift/self-containment check, then generates and
-# deploys the reference. Playwright browsers are NOT needed for docs generation.
+# requests, so no pull request can deploy. It installs the immutable provider
+# release pinned by ADR 0002, runs the drift/self-containment checks, then
+# generates and deploys the reference. Playwright browsers are NOT needed.
 
 on:
   push:
@@ -37,14 +37,6 @@ jobs:
           path: calculator-screenplay-bdd
           persist-credentials: false
 
-      - name: Check out the sibling Screenplay library (ADR 0001)
-        uses: actions/checkout@v7
-        with:
-          repository: NeoCognitus70/hand-baked-screenplay-pattern
-          ref: main
-          path: hand-baked-screenplay-pattern
-          persist-credentials: false
-
       - name: Set up Node 20
         uses: actions/setup-node@v7
         with:
@@ -52,11 +44,11 @@ jobs:
           cache: npm
           cache-dependency-path: calculator-screenplay-bdd/package-lock.json
 
-      - name: Build the sibling Screenplay library
-        run: npm run prepare:screenplay
-
       - name: Install dependencies
         run: npm ci
+
+      - name: Check the immutable Screenplay provider pin
+        run: npm run check:screenplay-provider
 
       - name: Build
         run: npm run build

@@ -1,7 +1,8 @@
 # Screenplay Architecture
 
-This project uses the sibling `hand-baked-screenplay-pattern` package as a
-dependency. It does not copy the Screenplay primitives into this repository.
+This project consumes the immutable v0.3.0 release of the
+`hand-baked-screenplay-pattern` package. It does not copy the Screenplay primitives into this
+repository or depend on a provider worktree.
 
 The goal is pedagogical: show how a small dependency-free Screenplay
 implementation can structure Playwright API and browser tests while preserving

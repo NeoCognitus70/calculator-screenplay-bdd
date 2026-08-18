@@ -1,8 +1,8 @@
 # Calculator Screenplay BDD
 
 A small calculator application used to teach BDD-style test automation with
-Playwright, TypeScript, REST + OpenAPI, and the sibling
-`hand-baked-screenplay-pattern` package.
+Playwright, TypeScript, REST + OpenAPI, and the versioned
+`hand-baked-screenplay-pattern` provider.
 
 The project is intentionally compact: a pure calculator domain, a dependency-free
 Node HTTP server, a static browser UI, and tests that climb the test pyramid from
@@ -47,36 +47,37 @@ tests/
 
 ## Prerequisites
 
-- Node.js 20 or newer (the same supported floor as the sibling library and CI).
-- **Two repositories, cloned side by side.** This project consumes the Screenplay library from a
-  sibling checkout (a deliberate decision for this co-developed teaching pair — see
-  [ADR 0001](./docs/adr/0001-consume-screenplay-library-via-sibling-checkout.md)):
+- Node.js 20 or newer (the same supported floor as the provider and CI).
 
-```bash
-git clone https://github.com/NeoCognitus70/calculator-screenplay-bdd
-git clone https://github.com/NeoCognitus70/hand-baked-screenplay-pattern
-```
-
-The dependency on `hand-baked-screenplay-pattern` is local and unpinned by design:
+The provider is pinned to the immutable public v0.3.0 release artefact, as recorded in
+[ADR 0002](./docs/adr/0002-consume-screenplay-provider-via-pinned-release.md):
 
 ```json
-"hand-baked-screenplay-pattern": "file:../hand-baked-screenplay-pattern"
+"hand-baked-screenplay-pattern": "https://github.com/NeoCognitus70/hand-baked-screenplay-pattern/releases/download/v0.3.0/hand-baked-screenplay-pattern-0.3.0.tgz"
 ```
 
-A preflight check (`scripts/preflight-screenplay.mjs`) runs before `prepare:screenplay` and
-`verify`, and fails fast with the exact clone command if the sibling checkout is missing.
+Published SHA-256:
+`ac5bd1f6d9bddf95c9a42f99f05f093c7875b1835ecd3ae0d5ca2385e810c36d`.
+The lockfile also records npm's SHA-512 integrity. `npm run check:screenplay-provider` fails if the
+manifest, lockfile, workflows, README, or ADR evidence drifts from this approved pin.
+
+No provider checkout, build, token, or runtime registry lookup is required.
 
 ## Install
 
-Build the sibling Screenplay package first, then install this project:
+Install this project from its own checkout:
 
 ```bash
-npm run prepare:screenplay
 npm ci
 ```
 
 This repository keeps npm's cache local through `.npmrc` so installs do not rely
 on a global cache location.
+
+Provider changes are developed and gated in the provider repository. Calculator adopts one only
+after a new immutable release and digest have been reviewed; do not commit a local `file:` override,
+branch URL, `npm link`, or provider-checkout workflow step here. A disposable experiment may use a
+locally packed candidate, but restore the approved manifest and lockfile before citing verification.
 
 ## Public-readiness status
 
@@ -131,6 +132,7 @@ publishes it on pushes to `main` after the build and that check pass; the drift 
 ## Test And Verify
 
 ```bash
+npm run check:screenplay-provider
 npm run typecheck
 npm run build
 npm run test:unit
@@ -169,12 +171,12 @@ fit together, see
 [Apache License 2.0](./LICENSE) — © 2026 Gary Brooks.
 
 This licence covers the original calculator application, tests, and documentation in this
-repository. The sibling
+repository. The
 [`hand-baked-screenplay-pattern`](https://github.com/NeoCognitus70/hand-baked-screenplay-pattern)
 provider is an independently licensed Apache-2.0 project; its own
 [`LICENSE`](https://github.com/NeoCognitus70/hand-baked-screenplay-pattern/blob/main/LICENSE)
-remains authoritative. The local `file:../hand-baked-screenplay-pattern` dependency does not vendor
-or relicense that repository. Other dependencies retain their respective terms.
+remains authoritative. Consuming its immutable release artefact does not vendor or relicense that
+repository. Other dependencies retain their respective terms.
 
 ## Change History
 
