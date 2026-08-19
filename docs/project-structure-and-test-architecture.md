@@ -131,4 +131,7 @@ uiController.spec.ts  integration  browser-backed controller error handling
 runs the typecheck/build/API-reference check, then runs `provider-contract` and the separately
 selected remainder. `providerContractProfile.ts` supplies executable provider count, REST case IDs,
 semantics and protected descriptions. CI runs the same non-duplicating sequence on every pull
-request from a standalone Calculator checkout under Node 20.
+request and push to `main` from a standalone Calculator checkout under Node 20. The job uses the
+Playwright 1.61.1 Noble container that matches `package-lock.json`, so Chromium and its Linux
+dependencies are pre-provisioned instead of fetched through the runner's Ubuntu package mirror; a
+15-minute job timeout bounds infrastructure stalls.
