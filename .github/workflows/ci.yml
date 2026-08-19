@@ -20,15 +20,21 @@ concurrency:
 
 env:
   # The repo's .npmrc points npm's cache at a repo-local dir (a local-machine
-  # convenience). Environment config outranks .npmrc, so this redirects the
-  # cache back to the runner default — the same directory actions/setup-node
-  # saves and restores.
-  npm_config_cache: /home/runner/.npm
+  # convenience). Environment config outranks .npmrc, so CI uses a writable
+  # container path that actions/setup-node can save and restore.
+  npm_config_cache: /tmp/npm-cache
 
 jobs:
   verify:
     name: verify (Node 20)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Match package-lock.json's Playwright version exactly. The image already
+    # contains Chromium and its Linux dependencies, avoiding a host apt mirror
+    # dependency before the repository's verification can start.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --user 1001
     defaults:
       run:
         working-directory: calculator-screenplay-bdd
@@ -48,9 +54,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
 
       - name: Verify (includes bounded provider contract exactly once)
         run: npm run verify
