@@ -7,6 +7,16 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 20 — **PROVIDER-SWITCHING PHASE 2 COMPLETE** (2026-08-19): CAL-25 PR
+[#40](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/40) (`f595b23`, CI recovery
+`c18f2be`, merge `dfcace7`) made the 9-check dual-provider profile a permanent, non-duplicating
+part of the required gate. Required implementation-head
+[run 32259992244](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32259992244)
+and merged-main
+[run 32260198682](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32260198682)
+are green. CAL-22..25 are resolved, the Risk Summary is reconciled to zero outstanding, and
+Phases 3–5 remain unpromoted.
+
 **Version:** 19 — **CAL-24 COMPLETE** (2026-08-18): PR [#39](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/39)
 (`cfa4a0a`, merge `9bc20d3`) added the independent Promise-native adapter, truthfully translated
 both adapters' lifecycle observations, passed all four exported conformance cases against each,
@@ -51,8 +61,8 @@ merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pu
 (governance) plus **CAL-16..20** (review Risks 1–5) are all Resolved 2026-07-27 and moved under
 **Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
 (see "Decisions" below). Risk 6 (Info) was not promoted.
-**Last Updated:** 2026-08-18
-**Based on:** `main` at `9bc20d3c97`, provider v0.3.0 at `58aa19261a`, the completed provider
+**Last Updated:** 2026-08-19
+**Based on:** `main` at `dfcace7f3e`, provider v0.3.0 at `58aa19261a`, the completed provider
 backlog `HBSP-28..33`, and the status-updated portfolio assessment
 [`hand-baked-screenplay-pattern-provider-switching-viability.md`](https://github.com/GBrooks1970/test-automation-portfolio/blob/main/project-specs/potential-project-outlines/hand-baked-screenplay-pattern-provider-switching-viability.md).
 
@@ -97,15 +107,22 @@ status — session handovers narrate; this file records.
 
 ## Outstanding Risks
 
-### Provider-switching Phase 2 (`CAL-22..25`) — PROMOTED 2026-08-18
+_No outstanding risks._
 
-**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. CAL-22..24 are complete; execute
-**CAL-25 next**. The sequence is both dependency-driven and score-ordered: establish a reproducible
-provider baseline, create the consumer composition boundary, prove one bounded alternate
-implementation, then make the proof a permanent gate and close the phase. Each item must remain
-independently reviewable.
+---
 
-#### Item CAL-22: Pin the immutable provider artefact and supersede the moving-sibling proof — Score: 18
+### Resolved Risks
+
+Resolved risks are kept here as a record that the gap existed — do not delete them.
+
+#### Provider-switching Phase 2 (`CAL-22..25`) — ✅ Resolved 2026-08-19
+
+Delivered in dependency order as independently reviewable PRs: **CAL-22 → CAL-23 → CAL-24 →
+CAL-25**. The sequence established a reproducible provider baseline, created the consumer
+composition boundary, proved one bounded alternate implementation, then made the proof a permanent
+gate and closed the phase.
+
+##### Item CAL-22: Pin the immutable provider artefact and supersede the moving-sibling proof — Score: 18
 
 **Priority Score:** Security Impact (4) + Breakage Probability (8) + Maintenance Burden (6) =
 **18 points (MEDIUM)**
@@ -137,7 +154,7 @@ the published SHA-256, installed and verified from a provider-free standalone co
 reviewed `npm audit` at zero vulnerabilities. **Depends on:** completed provider `HBSP-33` / v0.3.0
 release.
 
-#### Item CAL-23: Put provider selection and Actor construction behind one Calculator gateway — Score: 17
+##### Item CAL-23: Put provider selection and Actor construction behind one Calculator gateway — Score: 17
 
 **Priority Score:** Security Impact (2) + Breakage Probability (8) + Maintenance Burden (7) =
 **17 points (MEDIUM)**
@@ -164,7 +181,7 @@ steps and adapters do not select or construct a concrete provider throughout the
 **Status:** ✅ COMPLETE 2026-08-18 — PR #38 (`66b839f`, merge `d7574c4`); the unchanged 42-test
 suite, import/lifecycle boundary guard and zero-vulnerability audit passed. **Depends on:** CAL-22.
 
-#### Item CAL-24: Prove the REST contract slice through an independent alternate provider — Score: 16
+##### Item CAL-24: Prove the REST contract slice through an independent alternate provider — Score: 16
 
 **Priority Score:** Security Impact (2) + Breakage Probability (7) + Maintenance Burden (7) =
 **16 points (MEDIUM)**
@@ -196,7 +213,7 @@ assertion intent.
 zero-vulnerability audit passed with the alternate confined to the REST proof. **Depends on:**
 CAL-23.
 
-#### Item CAL-25: Gate and publish the bounded provider-switching proof — Score: 14
+##### Item CAL-25: Gate and publish the bounded provider-switching proof — Score: 14
 
 **Priority Score:** Security Impact (2) + Breakage Probability (6) + Maintenance Burden (6) =
 **14 points (MEDIUM)**
@@ -207,26 +224,29 @@ CAL-23.
 was and was not proved, and close the phase only after main-branch CI evidence exists.
 
 **Acceptance criteria:**
-- [ ] Add a named provider-contract command/profile that runs both conformance adapters and the
+- [x] Add a named provider-contract command/profile that runs both conformance adapters and the
       dual-provider REST slice; wire it into `npm run verify` and the required Node 20 CI job without
       duplicating the full Playwright/BDD suite.
-- [ ] Guard the hand-baked full-suite default and the bounded alternate profile against silent scope
+- [x] Guard the hand-baked full-suite default and the bounded alternate profile against silent scope
       drift: provider count, selected REST cases and unchanged domain descriptions are asserted from
       executable metadata rather than copied prose.
-- [ ] Update README, `SCREENPLAY.md`, architecture documentation, ADR index/decision, CHANGELOG and
+- [x] Update README, `SCREENPLAY.md`, architecture documentation, ADR index/decision, CHANGELOG and
       this backlog with the pinned artefact, gateway, profile command, evidence, limitations and the
       explicit non-goals (runtime hot-switching, mixed native objects and report parity).
-- [ ] `npm run verify` passes from a clean standalone checkout; `npm audit` is reviewed; the provider
+- [x] `npm run verify` passes from a clean standalone checkout; `npm audit` is reviewed; the provider
       and Calculator worktrees remain clean; required CI on the implementation head is green and linked
       from the completion record.
-- [ ] Only after CAL-22..25 are all complete, move them to Resolved Risks, reconcile the Risk Summary
+- [x] Only after CAL-22..25 are all complete, move them to Resolved Risks, reconcile the Risk Summary
       to zero, and record the Phase 2 completion date. Do not promote Phases 3–5 from this item.
       **Type:** test/CI + docs + close-out.
 
-**Status:** Open — implementation branch locally and provider-free standalone verified at 9 named
-provider checks + 42 remaining tests with zero audit findings. Required implementation-head and
-merged-main CI links, final acceptance ticks, relocation and Phase 2 close-out remain deliberately
-pending. **Depends on:** CAL-24.
+**Status:** ✅ COMPLETE 2026-08-19 — PR #40 (`f595b23`, CI recovery `c18f2be`, merge `dfcace7`);
+provider-free standalone verification passed at 9 named provider checks + 42 remaining tests with
+zero audit findings. Required implementation-head
+[run 32259992244](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32259992244)
+and merged-main
+[run 32260198682](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32260198682)
+are green. The Phase 2 sequence is closed; Phases 3–5 remain unpromoted. **Depends on:** CAL-24.
 
 ---
 
@@ -301,15 +321,6 @@ API and must **not** call or claim to host `/health` or `/api/calculations`.
 **Type:** code + CI + docs. **✅ COMPLETE 2026-08-04.**
 
 ---
-
-_No other outstanding risks._ `CAL-25` is the only current open item. The fourth
-review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see **Resolved Risks** below.
-
----
-
-### Resolved Risks
-
-Resolved risks are kept here as a record that the gap existed — do not delete them.
 
 #### Fourth review-derived cycle (Codex GPT-5 v1, CAL-16..20) — ✅ Resolved 2026-07-27
 
@@ -596,20 +607,19 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 1 | Phase 2 | CAL-25 — Open; CAL-22..24 complete |
+| MEDIUM (10–19) | 0 | — | — |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **1** | **Phase 2** | Provider-switching proof close-out active; execute CAL-25 |
-| Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
+| **Total Outstanding** | **0** | — | No promoted work remains |
+| Resolved | Provider-switching Phase 2 (CAL-22..25) + 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 6 review/delivery cycles | |
 
 ---
 
 ## Potential Next Steps
 
-**Current required sequence:** CAL-22..24 are complete; execute `CAL-25`. A cold session should read
-the provider-switching decisions near the top of this file, the one Open item above,
-[`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md), and the portfolio
-viability assessment. CAL-25 is the only valid starting item. Final relocation to Resolved Risks
-must wait for merged-main CI evidence; Phases 3–5 remain unpromoted.
+**Current required sequence:** none. CAL-22..25 completed Provider-switching Phase 2 on 2026-08-19;
+the accepted boundaries remain in [`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md)
+and [`ADR 0003`](./adr/0003-bound-provider-portability-proof.md). A fresh review or explicit owner
+promotion is required before new work is added.
 
 Phases 3–5 are not Calculator backlog work and remain unpromoted. A fifth code review or fresh survey
 must not displace the authorised Phase 2 sequence unless the owner explicitly reprioritises it.

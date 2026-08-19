@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Completed provider-switching Phase 2 (CAL-22..25) after green implementation-head and merged-main
+  evidence. The required CI job now runs in the version-matched Playwright 1.61.1 Noble container,
+  avoiding the GitHub-hosted runner's degraded Ubuntu package mirror; the redundant host
+  `playwright install --with-deps` bootstrap is removed and a 15-minute job timeout prevents an
+  infrastructure stall from consuming the six-hour platform maximum.
 - Added the permanent bounded provider-contract gate (CAL-25):
   `npm run test:provider-contract` now isolates the 9 dual-provider checks in their own Playwright
   project, while `npm test` runs the unchanged 42-test remainder. `npm run verify` and the required
