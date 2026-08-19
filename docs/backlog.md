@@ -7,6 +7,16 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 21 — **PROJECT CLOSED / RESTING** (2026-08-19): the authoritative backlog has zero
+outstanding work after Provider-switching Phase 2. The final verification sweep found `main` clean
+at `d043a35` and passed `npm run verify` (9 provider-contract checks + 42 remaining tests) plus a
+zero-vulnerability audit. Required
+[CI run 32261778935](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32261778935)
+and [Pages run 32261779930](https://github.com/NeoCognitus70/calculator-screenplay-bdd/actions/runs/32261779930)
+are green; the published API reference and raw OpenAPI document were verified by content. Terminal
+handover **v5 FINAL** will be the closure record after this note reaches `main`. The project now
+rests; any new work requires an explicit reopen and a fresh backlog promotion.
+
 **Version:** 20 — **PROVIDER-SWITCHING PHASE 2 COMPLETE** (2026-08-19): CAL-25 PR
 [#40](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/40) (`f595b23`, CI recovery
 `c18f2be`, merge `dfcace7`) made the 9-check dual-provider profile a permanent, non-duplicating
@@ -62,7 +72,7 @@ merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pu
 **Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
 (see "Decisions" below). Risk 6 (Info) was not promoted.
 **Last Updated:** 2026-08-19
-**Based on:** `main` at `dfcace7f3e`, provider v0.3.0 at `58aa19261a`, the completed provider
+**Based on:** `main` at `d043a35730`, provider v0.3.0 at `58aa19261a`, the completed provider
 backlog `HBSP-28..33`, and the status-updated portfolio assessment
 [`hand-baked-screenplay-pattern-provider-switching-viability.md`](https://github.com/GBrooks1970/test-automation-portfolio/blob/main/project-specs/potential-project-outlines/hand-baked-screenplay-pattern-provider-switching-viability.md).
 
@@ -616,13 +626,15 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 
 ## Potential Next Steps
 
-**Current required sequence:** none. CAL-22..25 completed Provider-switching Phase 2 on 2026-08-19;
-the accepted boundaries remain in [`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md)
-and [`ADR 0003`](./adr/0003-bound-provider-portability-proof.md). A fresh review or explicit owner
-promotion is required before new work is added.
+**Current required sequence:** none. The project closed and moved to resting status on 2026-08-19
+after CAL-22..25 completed Provider-switching Phase 2. The accepted boundaries remain in
+[`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md) and
+[`ADR 0003`](./adr/0003-bound-provider-portability-proof.md). A fresh review or explicit owner
+promotion must reopen the project before new work is added.
 
 Phases 3–5 are not Calculator backlog work and remain unpromoted. A fifth code review or fresh survey
-must not displace the authorised Phase 2 sequence unless the owner explicitly reprioritises it.
+must not promote or broaden them without a new explicit owner decision recorded in the owning
+backlog.
 
 ### Delivered
 
