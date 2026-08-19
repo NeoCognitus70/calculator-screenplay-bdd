@@ -64,21 +64,22 @@ project split (below) is what keeps them separate:
    specs or the generated BDD layer; they are not
    `*.spec.ts` files and so are never picked up directly as tests.
 
-## The two Playwright projects
+## The three Playwright projects
 
-`playwright.config.ts` defines **two** Playwright projects, which is how the two
+`playwright.config.ts` defines **three** Playwright projects, which is how the
 kinds of `tests/` code stay apart:
 
 | Project | `testDir` | What it runs |
 |---|---|---|
-| `unit-and-api` | `tests` | The plain spec files, matched by `testMatch: /.*\.spec\.ts/` — unit, REST integration, bounded provider-conformance/contract, server lifecycle and controller specs. `uiController.spec.ts` is browser-backed, so despite its name this project is not purely non-browser. |
+| `unit-and-api` | `tests` | The ordinary spec files, excluding `calculatorProviderConformance.spec.ts` and `calculatorProviderContract.spec.ts` — unit, REST integration, server lifecycle and controller specs. `uiController.spec.ts` is browser-backed, so despite its name this project is not purely non-browser. |
+| `provider-contract` | `tests` | Only the two `calculatorProvider*.spec.ts` files: 8 exported conformance cases plus the shared dual-provider REST profile. |
 | `bdd` | the `playwright-bdd` output dir | The Playwright specs **generated** from the Gherkin features, run under `devices['Desktop Chrome']`. |
 
 Because `unit-and-api` matches only `*.spec.ts`, the Screenplay glue files in
 `tests/` are excluded from that project; they reach the runner only via the
 generated BDD specs in the `bdd` project.
 
-Both projects share one `webServer`: Playwright starts the calculator once
+All three projects share one `webServer`: Playwright starts the calculator once
 (`npm run dev`) and waits on `/health`, so every test — unit, API, or BDD —
 exercises the same deployed boundary a real user would reach. `reuseExistingServer`
 is on locally and off in CI.
@@ -87,7 +88,10 @@ The npm scripts target the projects directly:
 
 - `npm run test:unit` → `--project=unit-and-api`.
 - `npm run test:bdd` → `bddgen` then the `--project=bdd` tests.
-- `npm test` → `bddgen` then **all** projects.
+- `npm run test:provider-contract` → the isolated `provider-contract` project (9 checks).
+- `npm test` → `bddgen`, `unit-and-api` and `bdd` only (42 tests).
+- `npm run verify` → the named provider profile once, then `npm test`; 51 checks total without
+  running either provider spec twice.
 
 ## How `bddgen` generates the BDD specs
 
@@ -123,7 +127,8 @@ uiController.spec.ts  integration  browser-backed controller error handling
                                     automated through the Screenplay layer
 ```
 
-`npm run verify` checks the immutable Screenplay-provider pin and the guarded composition boundary
-(including the REST-only alternate-provider scope), runs the typecheck and build, checks the API
-reference, and then runs the full test suite (`bddgen` + all Playwright projects). CI runs the same
-sequence on every pull request from a standalone Calculator checkout.
+`npm run verify` checks the immutable Screenplay-provider pin and guarded composition boundary,
+runs the typecheck/build/API-reference check, then runs `provider-contract` and the separately
+selected remainder. `providerContractProfile.ts` supplies executable provider count, REST case IDs,
+semantics and protected descriptions. CI runs the same non-duplicating sequence on every pull
+request from a standalone Calculator checkout under Node 20.

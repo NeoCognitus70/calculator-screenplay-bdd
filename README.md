@@ -145,6 +145,7 @@ npm run typecheck
 npm run build
 npm run test:unit
 npm run test:bdd
+npm run test:provider-contract
 npm run verify
 ```
 
@@ -155,7 +156,19 @@ truth is the feature text plus the step definitions.
 `tests/calculatorProviderConformance.spec.ts` registers the provider package's exported semantic
 cases against both Calculator adapters. `tests/calculatorProviderContract.spec.ts` runs one bounded
 REST profile through both adapters and compares required observations. These are ordinary
-`unit-and-api` specs; the alternate provider is never selected by the BDD fixture or browser lane.
+specs isolated in the named `provider-contract` Playwright project; the alternate provider is never
+selected by the BDD fixture or browser lane.
+
+`npm run test:provider-contract` runs its 9 checks. `npm run verify` runs that profile once, then the
+remaining 42 unit/API/BDD tests; `npm test` deliberately selects only those remaining projects so
+the provider proof is not duplicated. The required Node 20 CI job uses the same verify command.
+
+The executable scope lives in `tests/screenplay/providerContractProfile.ts`: exactly two providers,
+the accepted-multiplication and rejected-division-by-zero REST cases, their required semantics, and
+the protected Calculator descriptions. See [ADR 0003](./docs/adr/0003-bound-provider-portability-proof.md)
+for the decision and limits. This is not runtime hot-switching: native provider objects are never
+mixed, the alternate never enters browser/BDD, and report bytes, timestamps, screenshots and
+feature parity are explicit non-goals.
 
 Playwright is configured with `screenshot: 'on'`, so browser-backed tests record
 screenshots even when they pass. That is intentional for this small pedagogical
@@ -178,6 +191,8 @@ For deeper pedagogical notes, start with
 For a map of how the repository and its Playwright + `playwright-bdd` toolchain
 fit together, see
 [Project Structure and Test Architecture](./docs/project-structure-and-test-architecture.md).
+
+Architecture decisions are indexed in [docs/adr/README.md](./docs/adr/README.md).
 
 ## Licence
 

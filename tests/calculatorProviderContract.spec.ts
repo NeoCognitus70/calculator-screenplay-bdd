@@ -1,6 +1,5 @@
 /** Bounded CAL-24 REST proof using identical domain activities through both providers. */
 import { expect, test } from '@playwright/test';
-import type { CalculationRequest } from '../src/calculatorContracts.js';
 import { TheApiCalculation, TheRememberedCalculation } from './calculatorQuestions.js';
 import { Calculate } from './calculatorTasks.js';
 import { PlaywrightApiClient } from './screenplayApiClient.js';
@@ -16,40 +15,60 @@ import {
   type CalculatorProfileAbilities,
   type CalculatorScreenplayProvider,
 } from './screenplay/calculatorScreenplay.js';
-import { HandBakedScreenplayProvider } from './screenplay/handBakedScreenplayProvider.js';
-import { PromiseNativeScreenplayProvider } from './screenplay/promiseNativeScreenplayProvider.js';
-
-const providers: readonly CalculatorScreenplayProvider[] = [
-  new HandBakedScreenplayProvider(),
-  new PromiseNativeScreenplayProvider(),
-];
+import { providerContractProfile } from './screenplay/providerContractProfile.js';
 
 test('keeps the bounded REST contract equivalent across both Calculator providers', async ({
   request,
 }) => {
+  expect(providerContractProfile.providers).toHaveLength(
+    providerContractProfile.scope.providerCount,
+  );
+  expect(providerContractProfile.providers.map((entry) => entry.id)).toEqual(
+    providerContractProfile.scope.providerIds,
+  );
+  expect(
+    providerContractProfile.providers.map((entry) => entry.create().name),
+  ).toEqual(providerContractProfile.scope.providerIds);
+  expect(Object.values(providerContractProfile.cases).map((entry) => entry.id)).toEqual(
+    providerContractProfile.scope.restCaseIds,
+  );
+  expect(Object.values(providerContractProfile.cases)).toEqual(
+    providerContractProfile.scope.restCases,
+  );
+  expect(providerContractProfile.executableDomainDescriptions).toEqual(
+    providerContractProfile.scope.domainDescriptions,
+  );
+
   const client = new PlaywrightApiClient(request);
   const observations = [];
 
-  for (const provider of providers) {
-    observations.push(await runRestContractProfile(provider, client));
+  for (const entry of providerContractProfile.providers) {
+    observations.push(await runRestContractProfile(entry.create(), client));
   }
 
   const [handBaked, promiseNative] = observations;
-  expect(handBaked.accepted.status).toBe(200);
-  expect(handBaked.accepted.result).toBe(48);
-  expect(handBaked.accepted.rememberedResult).toBe(48);
-  expect(handBaked.rejected.status).toBe(422);
-  expect(handBaked.rejected.details).toContain('Division by zero is undefined.');
+  expect(handBaked.accepted.status).toBe(
+    providerContractProfile.cases.accepted.expected.status,
+  );
+  expect(handBaked.accepted.result).toBe(
+    providerContractProfile.cases.accepted.expected.result,
+  );
+  expect(handBaked.accepted.rememberedResult).toBe(
+    providerContractProfile.cases.accepted.expected.result,
+  );
+  expect(handBaked.rejected.status).toBe(
+    providerContractProfile.cases.rejected.expected.status,
+  );
+  expect(handBaked.rejected.details).toContain(
+    providerContractProfile.cases.rejected.expected.detail,
+  );
   expect(handBaked.rejected.assertionFailure).toMatchObject({
     name: 'CalculatorAssertionError',
-    message: expect.stringContaining('provider comparison sentinel'),
+    message: expect.stringContaining(
+      providerContractProfile.cases.rejected.expected.assertionSentinel,
+    ),
   });
   expect(handBaked.rejected.originalFailurePreserved).toBe(true);
-  expect(handBaked.accepted.descriptions).toEqual({
-    task: '#actor calculates using the REST API',
-    resultQuestion: 'the API calculation result',
-    rememberedQuestion: 'the result derived from the remembered calculation request',
-  });
   expect(promiseNative).toEqual(handBaked);
 });
 
@@ -72,11 +91,7 @@ async function runAcceptedCalculation(
     restAbilities(client),
   );
   const actor = scenario.actor('Avery', 'rest');
-  const request: CalculationRequest = {
-    leftOperand: 8,
-    operator: 'multiply',
-    rightOperand: 6,
-  };
+  const { request, expected } = providerContractProfile.cases.accepted;
   const calculation = Calculate.usingTheApi(request);
   const resultQuestion = TheApiCalculation.result();
   const rememberedQuestion = TheRememberedCalculation.result();
@@ -85,8 +100,8 @@ async function runAcceptedCalculation(
     await actor.attemptsTo(
       calculation,
       Calculate.shouldHaveBeenAccepted(),
-      ensure(resultQuestion, equals(48)),
-      ensure(rememberedQuestion, equals(48)),
+      ensure(resultQuestion, equals(expected.result)),
+      ensure(rememberedQuestion, equals(expected.result)),
     );
     const status = await actor.answer(lastResponseStatus());
     const result = await actor.answer(resultQuestion);
@@ -119,25 +134,21 @@ async function runRejectedCalculation(
     restAbilities(client),
   );
   const actor = scenario.actor('Avery', 'rest');
-  const request: CalculationRequest = {
-    leftOperand: 8,
-    operator: 'divide',
-    rightOperand: 0,
-  };
+  const { request, expected } = providerContractProfile.cases.rejected;
   const calculation = Calculate.usingTheApi(request);
   const detailsQuestion = TheApiCalculation.errorDetails();
 
   await actor.attemptsTo(
     calculation,
     Calculate.shouldHaveBeenRejectedAsUnsupported(),
-    ensure(detailsQuestion, includes('Division by zero is undefined.')),
+    ensure(detailsQuestion, includes<string>(expected.detail)),
   );
   const status = await actor.answer(lastResponseStatus());
   const details = await actor.answer(detailsQuestion);
 
   const failingAssertion = ensure(
     detailsQuestion,
-    includes('provider comparison sentinel'),
+    includes<string>(expected.assertionSentinel),
   );
   let assertionFailure: Error | undefined;
   try {

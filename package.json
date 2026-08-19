@@ -15,12 +15,13 @@
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.build.json",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
     "bddgen": "node --max-old-space-size=4096 ./node_modules/playwright-bdd/dist/cli/index.js",
-    "test": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --workers=1",
+    "test": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=unit-and-api --project=bdd --workers=1",
     "test:unit": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=unit-and-api --workers=1",
     "test:bdd": "npm run bddgen && node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=bdd --workers=1",
+    "test:provider-contract": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --project=provider-contract --workers=1",
     "docs:api": "npm run build && node scripts/generate-api-docs.mjs",
     "check:api-docs": "npm run build && node scripts/check-api-docs.mjs",
-    "verify": "npm run check:screenplay-provider && npm run check:screenplay-boundary && npm run typecheck && npm run build && node scripts/check-api-docs.mjs && npm test"
+    "verify": "npm run check:screenplay-provider && npm run check:screenplay-boundary && npm run typecheck && npm run build && node scripts/check-api-docs.mjs && npm run test:provider-contract && npm test"
   },
   "dependencies": {
     "hand-baked-screenplay-pattern": "https://github.com/NeoCognitus70/hand-baked-screenplay-pattern/releases/download/v0.3.0/hand-baked-screenplay-pattern-0.3.0.tgz"

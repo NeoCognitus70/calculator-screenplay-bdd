@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const testsRoot = resolve(repoRoot, 'tests');
 const failures = [];
+const packageJson = JSON.parse(readFileSync(resolve(repoRoot, 'package.json'), 'utf8'));
 
 const check = (condition, message) => {
   if (!condition) failures.push(message);
@@ -67,8 +68,31 @@ const restProof = readFileSync(
 );
 check(
   restProof.includes("scenario.actor('Avery', 'rest')") &&
+    restProof.includes('providerContractProfile') &&
     !restProof.includes('BrowseTheWeb'),
   'the alternate-provider proof must remain confined to the REST profile',
+);
+
+const config = readFileSync(resolve(repoRoot, 'playwright.config.ts'), 'utf8');
+check(
+  packageJson.scripts['test:provider-contract']?.includes(
+    '--project=provider-contract',
+  ),
+  'package.json must expose the named provider-contract project',
+);
+check(
+  packageJson.scripts.verify?.includes('npm run test:provider-contract'),
+  'npm run verify must include the named provider-contract profile',
+);
+check(
+  packageJson.scripts.test?.includes('--project=unit-and-api --project=bdd') &&
+    !packageJson.scripts.test.includes('--project=provider-contract'),
+  'npm test must run the remaining suite without duplicating provider-contract',
+);
+check(
+  config.includes("name: 'provider-contract'") &&
+    config.includes('testIgnore: providerContractSpecs'),
+  'Playwright must isolate provider-contract from the remaining unit/API project',
 );
 
 const fixtures = readFileSync(resolve(testsRoot, 'calculatorFixtures.ts'), 'utf8');
@@ -84,7 +108,7 @@ if (failures.length > 0) {
 }
 
 console.log(
-  'check-screenplay-boundary: PASS — one static provider gateway owns both scenario profiles',
+  'check-screenplay-boundary: PASS — static BDD gateway and bounded provider-contract profile are isolated',
 );
 
 function filesBelow(directory) {

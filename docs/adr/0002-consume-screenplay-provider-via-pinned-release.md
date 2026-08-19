@@ -3,6 +3,7 @@
 **Status:** Accepted (owner-authorised 2026-08-18 as CAL-22)
 **Date:** 2026-08-18
 **Supersedes:** [ADR 0001](./0001-consume-screenplay-library-via-sibling-checkout.md)
+**Followed by:** [ADR 0003](./0003-bound-provider-portability-proof.md)
 **Relates to:** `docs/backlog.md` Provider-switching Phase 2, item CAL-22
 
 ## Context

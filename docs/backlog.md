@@ -7,6 +7,13 @@
 
 # Calculator Screenplay BDD — Backlog
 
+**Version:** 19 — **CAL-24 COMPLETE** (2026-08-18): PR [#39](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/39)
+(`cfa4a0a`, merge `9bc20d3`) added the independent Promise-native adapter, truthfully translated
+both adapters' lifecycle observations, passed all four exported conformance cases against each,
+and proved the shared accepted/rejected REST slice with equivalent descriptions, ordering and
+original failures. The suite grew 42 → 51 with no dependency, Gherkin or browser-default drift.
+**CAL-25 is now the only open item.**
+
 **Version:** 18 — **CAL-23 COMPLETE** (2026-08-18): PR [#38](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pull/38)
 (`66b839f`, merge `d7574c4`) introduced the Calculator-owned Screenplay seam, static hand-baked
 gateway, scenario fixture and deterministic boundary guard. Actor construction left the step
@@ -45,7 +52,7 @@ merged by PR [#22](https://github.com/NeoCognitus70/calculator-screenplay-bdd/pu
 **Resolved Risks** — **zero outstanding**. v12 opened the cycle and settled the two policy decisions
 (see "Decisions" below). Risk 6 (Info) was not promoted.
 **Last Updated:** 2026-08-18
-**Based on:** `main` at `d7574c4dab`, provider v0.3.0 at `58aa19261a`, the completed provider
+**Based on:** `main` at `9bc20d3c97`, provider v0.3.0 at `58aa19261a`, the completed provider
 backlog `HBSP-28..33`, and the status-updated portfolio assessment
 [`hand-baked-screenplay-pattern-provider-switching-viability.md`](https://github.com/GBrooks1970/test-automation-portfolio/blob/main/project-specs/potential-project-outlines/hand-baked-screenplay-pattern-provider-switching-viability.md).
 
@@ -92,8 +99,8 @@ status — session handovers narrate; this file records.
 
 ### Provider-switching Phase 2 (`CAL-22..25`) — PROMOTED 2026-08-18
 
-**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. CAL-22..23 are complete; execute
-**CAL-24 next**. The sequence is both dependency-driven and score-ordered: establish a reproducible
+**Delivery rule:** execute **CAL-22 → CAL-23 → CAL-24 → CAL-25**. CAL-22..24 are complete; execute
+**CAL-25 next**. The sequence is both dependency-driven and score-ordered: establish a reproducible
 provider baseline, create the consumer composition boundary, prove one bounded alternate
 implementation, then make the proof a permanent gate and close the phase. Each item must remain
 independently reviewable.
@@ -169,23 +176,25 @@ one independent Promise-native alternate provider without changing the slice's d
 assertion intent.
 
 **Acceptance criteria:**
-- [ ] Add a Calculator-owned alternate provider adapter that does not reuse hand-baked native
+- [x] Add a Calculator-owned alternate provider adapter that does not reuse hand-baked native
       `Actor`, `Task`, `Question`, `Stage` or reporter classes at runtime. Keep it deliberately small;
       do not add Serenity/JS, Cypress, Cucumber or Playwright as provider-runtime dependencies.
-- [ ] Run the exported provider conformance cases against both Calculator adapters, truthfully
+- [x] Run the exported provider conformance cases against both Calculator adapters, truthfully
       translating their native lifecycle observations. Both prove ability/memory isolation,
       sync/async Questions, ordered execution, stop-on-failure, description preservation and
       exactly-once lifecycle outcomes.
-- [ ] Define one bounded REST contract profile containing at least a successful calculation and a
+- [x] Define one bounded REST contract profile containing at least a successful calculation and a
       rejected/failed calculation path. Execute the same Calculator-owned domain Tasks, Questions and
       assertions through both providers; do not duplicate or provider-prefix the domain wording.
-- [ ] Prove equivalent required observations: request/result semantics, ordering, original failure,
+- [x] Prove equivalent required observations: request/result semantics, ordering, original failure,
       assertion outcome and human-readable descriptions. Do not compare internal Actor objects,
       timestamps, byte output or report feature sets.
-- [ ] Keep the full browser/BDD suite on hand-baked only. The alternate profile cannot become the
+- [x] Keep the full browser/BDD suite on hand-baked only. The alternate profile cannot become the
       default or widen beyond the recorded REST slice in this item. **Type:** code + contract tests + docs.
 
-**Status:** Open. **Depends on:** CAL-23.
+**Status:** ✅ COMPLETE 2026-08-18 — PR #39 (`cfa4a0a`, merge `9bc20d3`); 51/51 tests and the
+zero-vulnerability audit passed with the alternate confined to the REST proof. **Depends on:**
+CAL-23.
 
 #### Item CAL-25: Gate and publish the bounded provider-switching proof — Score: 14
 
@@ -214,7 +223,10 @@ was and was not proved, and close the phase only after main-branch CI evidence e
       to zero, and record the Phase 2 completion date. Do not promote Phases 3–5 from this item.
       **Type:** test/CI + docs + close-out.
 
-**Status:** Open. **Depends on:** CAL-24.
+**Status:** Open — implementation branch locally and provider-free standalone verified at 9 named
+provider checks + 42 remaining tests with zero audit findings. Required implementation-head and
+merged-main CI links, final acceptance ticks, relocation and Phase 2 close-out remain deliberately
+pending. **Depends on:** CAL-24.
 
 ---
 
@@ -290,7 +302,7 @@ API and must **not** call or claim to host `/health` or `/api/calculations`.
 
 ---
 
-_No other outstanding risks._ `CAL-22..25` are the only current open items. The fourth
+_No other outstanding risks._ `CAL-25` is the only current open item. The fourth
 review-derived cycle (Codex GPT-5 v1) closed 2026-07-27 — see **Resolved Risks** below.
 
 ---
@@ -584,19 +596,20 @@ review recommendation **not** actioned by this cycle is the optional OpenAPI con
 | Priority | Count | Total Effort | Status Distribution |
 |---|---|---|---|
 | HIGH (20–30) | 0 | — | — |
-| MEDIUM (10–19) | 2 | Phase 2 | CAL-24, CAL-25 — Open, dependency-ordered; CAL-22..23 complete |
+| MEDIUM (10–19) | 1 | Phase 2 | CAL-25 — Open; CAL-22..24 complete |
 | LOW (0–9) | 0 | — | — |
-| **Total Outstanding** | **2** | **Phase 2** | Provider-switching proof active; start with CAL-24 |
+| **Total Outstanding** | **1** | **Phase 2** | Provider-switching proof close-out active; execute CAL-25 |
 | Resolved | 4 risks + 5 review refinements (CAL-01..05) + public-readiness reconciliation + 3 optional refinements (CAL-06, CAL-11, CAL-12) + review v2 close-out (TRIAGE-01..04) + review v1/Codex close-out (CAL-15..20) | ~3 hrs + 5 review cycles | |
 
 ---
 
 ## Potential Next Steps
 
-**Current required sequence:** CAL-22..23 are complete; execute `CAL-24 → CAL-25`. A cold session
-should read the provider-switching decisions near the top of this file, the two Open items above,
+**Current required sequence:** CAL-22..24 are complete; execute `CAL-25`. A cold session should read
+the provider-switching decisions near the top of this file, the one Open item above,
 [`ADR 0002`](./adr/0002-consume-screenplay-provider-via-pinned-release.md), and the portfolio
-viability assessment. CAL-24 is the only valid starting item; CAL-25 remains dependency-blocked.
+viability assessment. CAL-25 is the only valid starting item. Final relocation to Resolved Risks
+must wait for merged-main CI evidence; Phases 3–5 remain unpromoted.
 
 Phases 3–5 are not Calculator backlog work and remain unpromoted. A fifth code review or fresh survey
 must not displace the authorised Phase 2 sequence unless the owner explicitly reprioritises it.
